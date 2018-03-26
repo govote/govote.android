@@ -1,0 +1,127 @@
+apply from: rootProject.file('tools/predex.gradle')
+apply from: rootProject.file('tools/git-utils.gradle')
+
+apply plugin: "org.owasp.dependencycheck"
+apply plugin: "org.sonarqube"
+
+buildscript {
+	apply from: rootProject.file('versions.gradle')
+
+	addRepos(repositories)
+
+	dependencies {
+		classpath "com.android.tools.build:gradle:3.0.1"
+		classpath "com.google.gms:google-services:3.1.2"
+		classpath "io.fabric.tools:gradle:$versions.fabric"
+		classpath "org.owasp:dependency-check-gradle:2.1.1"
+		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.1"
+		classpath "gradle.plugin.com.github.spotbugs:gradlePlugin:1.6.0"
+	}
+	
+	repositories {
+		mavenCentral()
+	}
+}
+
+ext.isCI = System.getenv("CI") == "true"
+ext.cores = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+
+allprojects {
+	addRepos(repositories)
+
+	configurations.all {
+		resolutionStrategy {
+			eachDependency { details ->
+				if (details.requested.group == 'com.android.support') {
+					details.useVersion versions.supportLibrary
+				}
+			}
+		}
+	}
+
+	tasks.withType(JavaCompile) {
+		sourceCompatibility = JavaVersion.VERSION_1_8
+		targetCompatibility = JavaVersion.VERSION_1_8
+
+		configure(options) {
+			encoding = "utf-8"
+			incremental = true
+			fork = true
+		}
+	}
+
+	tasks.withType(Test) {
+		if (project.hasProperty("skipReports")) {
+			reports.html.enabled = false
+			reports.junitXml.enabled = false
+		}
+
+		testLogging {
+			exceptionFormat "full"
+			showExceptions true
+			showCauses true
+			showStackTraces true
+			maxParallelForks cores
+			forkEvery 10
+			events = ["failed", "passed", "skipped", "standardOut", "standardError"]
+		}
+	}
+
+
+	gradle.projectsEvaluated {
+		tasks.withType(JavaCompile) {
+			options.compilerArgs << "-Xlint:deprecation"
+		}
+	}
+}
+
+subprojects { subproject ->
+	apply from: rootProject.file('tools/jacoco.gradle')
+	apply from: rootProject.file('tools/linters.gradle')
+
+	afterEvaluate { Project project ->
+		if (project.findProperty('android')) {
+			android {
+				compileOptions {
+					sourceCompatibility JavaVersion.VERSION_1_8
+					targetCompatibility JavaVersion.VERSION_1_8
+				}
+
+				compileSdkVersion 27
+				buildToolsVersion "27.0.3"
+
+				defaultConfig {
+					minSdkVersion 19
+					targetSdkVersion 27
+					versionCode 1
+					versionName "1.0"
+					vectorDrawables.useSupportLibrary true
+				}
+			}
+		}
+
+		tasks.withType(com.github.spotbugs.SpotBugsTask) {
+			excludeFilter rootProject.file("tools/linters/spotbugs-filter.xml")
+			reports {
+				xml.enabled = false
+				html.enabled = true
+				html.setDestination rootProject.file("reports/spotbugs/index.html")
+			}
+		}
+	}
+}
+
+task clean(type: Delete) {
+	delete rootProject.buildDir
+}
+
+task printBuildScriptClasspath {
+	doLast {
+		println project.buildscript.configurations.classpath.asPath
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '4.6'
+	distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
