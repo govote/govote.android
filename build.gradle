@@ -1,127 +1,151 @@
-apply from: rootProject.file('tools/predex.gradle')
-apply from: rootProject.file('tools/git-utils.gradle')
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 apply plugin: "org.owasp.dependencycheck"
 apply plugin: "org.sonarqube"
+apply from: "$rootDir/build.utils.gradle"
 
 buildscript {
-	apply from: rootProject.file('versions.gradle')
+  ext.kotlin_version = Versions.kotlin
 
-	addRepos(repositories)
+  repositories {
+    google()
+    jcenter()
+    maven { url 'https://maven.fabric.io/public' }
+    gradlePluginPortal()
+  }
 
-	dependencies {
-		classpath "com.android.tools.build:gradle:3.0.1"
-		classpath "com.google.gms:google-services:3.1.2"
-		classpath "io.fabric.tools:gradle:$versions.fabric"
-		classpath "org.owasp:dependency-check-gradle:2.1.1"
-		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.1"
-		classpath "gradle.plugin.com.github.spotbugs:gradlePlugin:1.6.0"
-	}
-	
-	repositories {
-		mavenCentral()
-	}
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.5.0-alpha03'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+    classpath "org.jacoco:org.jacoco.core:${Versions.jacoco}"
+    classpath "com.google.gms:google-services:${Versions.google_services}"
+    classpath "io.fabric.tools:gradle:${Versions.fabric}"
+    classpath "org.owasp:dependency-check-gradle:${Versions.owasp_dependency_check}"
+    classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${Versions.sonar}"
+    classpath "gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:${Versions.detekt}"
+    classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:${Versions.coveralls}"
+    classpath "android.arch.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+  }
 }
 
-ext.isCI = System.getenv("CI") == "true"
-ext.cores = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+ext.testButler = Versions.testButler
+ext.java_version = JavaVersion.VERSION_1_8
 
 allprojects {
-	addRepos(repositories)
+  if (shouldSkip(it)) return
 
-	configurations.all {
-		resolutionStrategy {
-			eachDependency { details ->
-				if (details.requested.group == 'com.android.support') {
-					details.useVersion versions.supportLibrary
-				}
-			}
-		}
-	}
+  repositories {
+    google()
+    jcenter()
+  }
 
-	tasks.withType(JavaCompile) {
-		sourceCompatibility = JavaVersion.VERSION_1_8
-		targetCompatibility = JavaVersion.VERSION_1_8
+  apply plugin: 'jacoco'
+  apply from: "$rootDir/dotenv.gradle"
 
-		configure(options) {
-			encoding = "utf-8"
-			incremental = true
-			fork = true
-		}
-	}
+  jacoco {
+    toolVersion = Versions.jacoco
+  }
 
-	tasks.withType(Test) {
-		if (project.hasProperty("skipReports")) {
-			reports.html.enabled = false
-			reports.junitXml.enabled = false
-		}
+  configurations.all {
+    resolutionStrategy {
+      eachDependency { details ->
+        if (details.requested.group == 'com.android.support') {
+          details.useVersion Versions.supportLibrary
+        }
+      }
+    }
+  }
 
-		testLogging {
-			exceptionFormat "full"
-			showExceptions true
-			showCauses true
-			showStackTraces true
-			maxParallelForks cores
-			forkEvery 10
-			events = ["failed", "passed", "skipped", "standardOut", "standardError"]
-		}
-	}
+  tasks.withType(JavaCompile) {
+    sourceCompatibility = java_version
+    targetCompatibility = java_version
 
+    configure(options) {
+      options.compilerArgs << "-Xlint:deprecation"
+      options.encoding = "utf-8"
+      options.incremental = true
+      options.fork = true
+    }
+  }
 
-	gradle.projectsEvaluated {
-		tasks.withType(JavaCompile) {
-			options.compilerArgs << "-Xlint:deprecation"
-		}
-	}
+  tasks.withType(KotlinCompile).all {
+    kotlinOptions {
+      jvmTarget = java_version
+    }
+  }
+
+  tasks.withType(Test) {
+    if (project.hasProperty("skipReports")) {
+      reports.html.enabled = true
+      reports.junitXml.enabled = true
+    }
+
+    jacoco.includeNoLocationClasses = true
+
+    testLogging {
+      exceptionFormat "full"
+      showExceptions true
+      showCauses true
+      showStackTraces true
+      maxParallelForks BuildUtils.cores
+      forkEvery 10
+      events = ["failed", "passed", "skipped", "standardOut", "standardError"]
+    }
+  }
 }
 
-subprojects { subproject ->
-	apply from: rootProject.file('tools/jacoco.gradle')
-	apply from: rootProject.file('tools/linters.gradle')
+subprojects {
+  if (shouldSkip(it)) return
 
-	afterEvaluate { Project project ->
-		if (project.findProperty('android')) {
-			android {
-				compileOptions {
-					sourceCompatibility JavaVersion.VERSION_1_8
-					targetCompatibility JavaVersion.VERSION_1_8
-				}
+  setPreDex(it)
 
-				compileSdkVersion 27
-				buildToolsVersion "27.0.3"
+  apply from: "$rootDir/tools/ktlint.gradle"
+  apply from: "$rootDir/tools/detek.gradle"
 
-				defaultConfig {
-					minSdkVersion 19
-					targetSdkVersion 27
-					versionCode 1
-					versionName "1.0"
-					vectorDrawables.useSupportLibrary true
-				}
-			}
-		}
+  afterEvaluate { Project project ->
+    project.tasks.whenTaskAdded {
+      if (it.name == "testReleaseUnitTest") {
+        it.enabled = false
+      }
+    }
 
-		tasks.withType(com.github.spotbugs.SpotBugsTask) {
-			excludeFilter rootProject.file("tools/linters/spotbugs-filter.xml")
-			reports {
-				xml.enabled = false
-				html.enabled = true
-				html.setDestination rootProject.file("reports/spotbugs/index.html")
-			}
-		}
-	}
+    if (isAndroidModule(project)) {
+      android {
+        compileOptions {
+          sourceCompatibility JavaVersion.VERSION_1_8
+          targetCompatibility JavaVersion.VERSION_1_8
+        }
+
+        compileSdkVersion 28
+
+        defaultConfig {
+          minSdkVersion 21
+          targetSdkVersion 28
+          versionCode 1
+          versionName "1.0"
+          vectorDrawables.useSupportLibrary true
+        }
+
+        sourceSets {
+          main.java.srcDirs += 'src/main/kotlin'
+          debug.java.srcDirs += 'src/debug/kotlin'
+          release.java.srcDirs += 'src/release/kotlin'
+          test.java.srcDirs += 'src/test/kotlin'
+          androidTest.java.srcDirs += 'src/androidTest/kotlin'
+        }
+
+        buildTypes { debug { testCoverageEnabled = true } }
+      }
+    }
+  }
 }
 
 task clean(type: Delete) {
-	delete rootProject.buildDir
+  delete rootProject.buildDir
 }
 
-task printBuildScriptClasspath {
-	doLast {
-		println project.buildscript.configurations.classpath.asPath
-	}
-}
-
-task wrapper(type: Wrapper) {
-	gradleVersion = '4.6'
-	distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+wrapper {
+  gradleVersion = '5.1.1'
+  distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }

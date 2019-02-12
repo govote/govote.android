@@ -1,224 +1,225 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs'
 
-apply from: "$rootDir/tools/layoutIds.gradle"
-apply from: "$rootDir/tools/test-butler.gradle"
+apply from: "$rootDir/tools/instrumentation/test-butler.gradle"
+apply from: "$rootDir/tools/coverage.gradle"
 
-final app_name = 'Boilerplate'
+final app_name = 'GoVote'
 
 android {
-	defaultConfig {
-		applicationId "com.example"
-		testInstrumentationRunner "com.example.InstrumentationRunner"
-	}
+  defaultConfig {
+    applicationId "br.com.govote.android"
+    multiDexEnabled false
+    testInstrumentationRunner "br.com.govote.android.InstrumentationRunner"
+    testInstrumentationRunnerArguments clearPackageData: "true"
+  }
 
-	dexOptions {
-		javaMaxHeapSize "2g"
-		preDexLibraries !rootProject.ext.isCI
-		maxProcessCount rootProject.ext.cores
-	}
+  dexOptions {
+    javaMaxHeapSize "2g"
+    preDexLibraries !BuildUtils.isCI
+    maxProcessCount BuildUtils.cores
+  }
 
-	aaptOptions {
-		cruncherEnabled false
-	}
+  aaptOptions { cruncherEnabled false }
 
-	dataBinding {
-		enabled true
-	}
+  lintOptions {
+    check 'Interoperability'
+    checkAllWarnings true
+    warningsAsErrors true
+    lintConfig file("$projectDir/lint.xml")
+    baseline file("$projectDir/lint-baseline.xml")
 
-	lintOptions {
-		checkAllWarnings true
-		warningsAsErrors true
-		lintConfig file("$rootDir/lint.xml")
+    if (BuildUtils.isCI) {
+      textReport true
+      textOutput 'stdout'
+    }
+  }
 
-		if (rootProject.ext.isCI) {
-			textReport true
-			textOutput 'stdout'
-		}
-	}
+  signingConfigs {
+    debug {
+      keyAlias 'androiddebugkey'
+      keyPassword 'android'
+      storeFile file("$rootDir/app/distribution/debug.keystore")
+      storePassword 'android'
+    }
 
-	signingConfigs {
-		debug {
-			keyAlias 'androiddebugkey'
-			keyPassword 'android'
-			storeFile file("$rootDir/distribution/debug.keystore")
-			storePassword 'android'
-		}
+    if (System.getenv("KEY_ALIAS") != null) {
+      release {
+        keyAlias System.getenv("KEY_ALIAS")
+        keyPassword System.getenv("KEY_PASSWORD")
+        storeFile file("$rootDir/app/distribution/release.keystore")
+        storePassword System.getenv("KEYSTORE_PASSWORD")
+      }
+    }
+  }
 
-		if (System.getenv("KEY_ALIAS") != null) {
-			release {
-				keyAlias System.getenv("KEY_ALIAS")
-				keyPassword System.getenv("KEY_PASSWORD")
-				storeFile file(System.getenv("KEYSTORE_FILE"))
-				storePassword System.getenv("KEYSTORE_PASSWORD")
-			}
-		}
-	}
+  buildTypes {
+    debug {
+      versionNameSuffix ".debug"
+      minifyEnabled false
+      useProguard false
+      debuggable true
+      signingConfig signingConfigs.debug
 
-	buildTypes {
-		debug {
-			versionNameSuffix ".debug"
-			minifyEnabled true
-			useProguard true
-			debuggable true
-			shrinkResources false
-			signingConfig signingConfigs.debug
+      ext.alwaysUpdateBuildId = false
+      ext.enableCrashlytics = false
 
-			ext.alwaysUpdateBuildId = false
-			ext.enableCrashlytics = false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
+      testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
 
-			testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
+      resValue 'string', 'app_name', "1." + app_name + ".debug"
+      buildConfigField 'String', 'API_URI', '"http://192.168.0.14:3000"'
+      buildConfigField 'String', 'GRAPH_API_URI', '"https://graph.facebook.com/v3.2/"'
+   }
 
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
-			consumerProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-			testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+    release {
+      zipAlignEnabled true
+      shrinkResources true
+      minifyEnabled true
+      crunchPngs false
 
-			resValue 'string', 'app_name', "1." + app_name + ".debug"
-			buildConfigField 'String', 'API_URI', '"http://localhost:3000"'
-		}
+      if (System.getenv("KEY_ALIAS") == null) {
+        signingConfig signingConfigs.debug
+      } else {
+        signingConfig signingConfigs.release
+      }
 
-		release {
-			zipAlignEnabled true
-			shrinkResources true
-			minifyEnabled true
+      ext.betaDistributionGroupAliases = "release"
+      ext.betaDistributionNotifications = true
+      ext.betaDistributionReleaseNotesFilePath = "$projectDir/release-notes.txt"
 
-			if (System.getenv("KEY_ALIAS") == null) {
-				signingConfig signingConfigs.debug
-			} else {
-				signingConfig signingConfigs.release
-			}
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
 
-			ext.betaDistributionGroupAliases = "release"
-			ext.betaDistributionNotifications = true
-			ext.betaDistributionReleaseNotesFilePath = "$projectDir/release-notes.txt"
+      resValue 'string', 'app_name', app_name
+      buildConfigField 'String', 'API_URI', '"http://bffApi.prod"'
+    }
 
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
-			consumerProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    applicationVariants.all { variant ->
+      if (variant.buildType.name == "debug") {
+        variant.mergedFlavor.resourceConfigurations.clear()
+        variant.mergedFlavor.resourceConfigurations.add("en")
+        variant.mergedFlavor.resourceConfigurations.add("xxhdpi")
+      }
+    }
+  }
 
-			resValue 'string', 'app_name', app_name
-			buildConfigField 'String', 'API_URI', '"http://api.prod"'
-		}
-	}
+  testOptions {
+    execution 'ANDROID_TEST_ORCHESTRATOR'
+    animationsDisabled true
+    unitTests {
+      includeAndroidResources = true
+      returnDefaultValues = true
+    }
+  }
 
-	testOptions {
-		unitTests {
-			includeAndroidResources = true
-			returnDefaultValues = true
-		}
-	}
+  applicationVariants.all { variant ->
+    if (variant.buildType.name == "release" || BuildUtils.isCI) {
+      variant.outputs.each { output ->
+        output.versionNameOverride = file("$rootDir/VERSION").text
+        //output.versionOverride = versionCode = Integer.valueOf(file("$rootDir/VERSION_CODE").readLines()[0].trim())
+      }
+    }
+  }
 
-	applicationVariants.all { variant ->
-		if (variant.buildType.name == "release") {
-			variant.mergedFlavor.versionCode = Integer.valueOf(file("$rootDir/VERSION_CODE").readLines()[0].trim())
-			variant.mergedFlavor.versionName = file("$rootDir/VERSION").text
-		}
-	}
-
-	packagingOptions {
-		exclude 'kotlin/**'
-		exclude 'META-INF/*.kotlin_module'
-		exclude 'META-INF/*.version'
-		exclude 'META-INF/LICENSE.txt'
-		exclude 'META-INF/NOTICE.txt'
-		exclude 'META-INF/rxjava.properties'
-	}
+  packagingOptions {
+    exclude 'kotlin/**'
+    exclude 'META-INF/*.kotlin_module'
+    exclude 'META-INF/*.version'
+    exclude 'META-INF/LICENSE.txt'
+    exclude 'META-INF/NOTICE.txt'
+    exclude 'META-INF/rxjava.properties'
+  }
 }
-
-jacoco {
-	toolVersion = "0.7.9"
-}
-
-final versions = rootProject.ext.versions
 
 dependencies {
-	// ---------------------------------------------------------------------------------------------
-	// Project Libraries
-	// ---------------------------------------------------------------------------------------------
-	implementation project(':toolkit')
-	implementation project(':api')
-	implementation project(':android-utils')
-	implementation project(':analytics')
-	implementation project(':interactors')
+  // ---------------------------------------------------------------------------------------------
+  // Project Libraries
+  // ---------------------------------------------------------------------------------------------
+  implementation project(':utils')
+  implementation project(':api')
+  implementation project(':analytics')
+  implementation project(':data')
+  implementation project(':authentication')
+  implementation project(':about')
 
-	// ---------------------------------------------------------------------------------------------
-	// Dependencies
-	// ---------------------------------------------------------------------------------------------
-	implementation "com.android.support:support-annotations:$versions.supportLibrary"
-	implementation "com.android.support.constraint:constraint-layout:$versions.constraintLayout"
-	implementation("com.android.support:appcompat-v7:$versions.supportLibrary") {
-		exclude module: 'support-annotations'
-		exclude module: 'support-v4'
-		exclude module: 'cardview-v7'
-	}
-	implementation("com.android.support:design:$versions.supportLibrary") {
-		exclude module: 'support-v4'
-		exclude module: 'appcompat-v7'
-		exclude module: 'recyclerview-v7'
-		exclude module: 'cardview-v7'
-	}
-	implementation "com.android.support:support-v4:$versions.supportLibrary"
-	implementation "com.android.support:support-v13:$versions.supportLibrary"
-	implementation("com.android.support:recyclerview-v7:$versions.supportLibrary") {
-		exclude module: 'support-annotations'
-		exclude module: 'support-compat'
-		exclude module: 'support-core-ui'
-	}
-	implementation "android.arch.lifecycle:extensions:$versions.arch"
-	annotationProcessor "android.arch.lifecycle:compiler:$versions.arch"
-	implementation "com.google.firebase:firebase-crash:$versions.play"
-	implementation "com.google.firebase:firebase-core:$versions.play"
-	implementation "com.google.firebase:firebase-messaging:$versions.play"
-	implementation "com.google.firebase:firebase-config:$versions.play"
-	implementation "com.google.code.gson:gson:$versions.gson"
-	implementation "io.reactivex.rxjava2:rxandroid:$versions.rxAndroid"
-	implementation "io.reactivex.rxjava2:rxjava:$versions.rxJava"
-	implementation "com.google.dagger:dagger-android:$versions.dagger"
-	implementation "com.google.dagger:dagger-android-support:$versions.dagger"
-	annotationProcessor "com.google.dagger:dagger-android-processor:$versions.dagger"
-	annotationProcessor "com.google.dagger:dagger-compiler:$versions.dagger"
-	implementation "de.psdev.licensesdialog:licensesdialog:$versions.licensesDialog"
-	implementation "com.squareup.okhttp3:okhttp:$versions.okhttp"
-	implementation "com.facebook.fresco:fresco:$versions.fresco"
-	implementation "com.scottyab:rootbeer-lib:$versions.rootbeer"
+  // ---------------------------------------------------------------------------------------------
+  // Kotlin
+  // ---------------------------------------------------------------------------------------------
+  implementation Dependencies.kotlinStandardLib
 
-	// ---------------------------------------------------------------------------------------------
-	// Development and Support Libs
-	// ---------------------------------------------------------------------------------------------
-	implementation("com.crashlytics.sdk.android:crashlytics:$versions.crashlytics") {
-		transitive = true
-	}
-	debugImplementation "nl.littlerobots.rxlint:rxlint:$versions.rxlint"
-	releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$versions.leakCanary"
-	testImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$versions.leakCanary"
-	debugImplementation "com.squareup.leakcanary:leakcanary-android:$versions.leakCanary"
-	debugImplementation "com.facebook.stetho:stetho:$versions.stetho"
-	debugImplementation "com.facebook.stetho:stetho-okhttp3:$versions.stetho"
-	debugImplementation "com.tspoon.traceur:traceur:$versions.traceur"
-	debugImplementation("com.squareup.okhttp3:logging-interceptor:$versions.okhttp") {
-		exclude module: 'okhttp'
-	}
+  // ---------------------------------------------------------------------------------------------
+  // Dependencies
+  // ---------------------------------------------------------------------------------------------
+  implementation Dependencies.constraintLayout
+  implementation(Dependencies.appcompat)
+  implementation(Dependencies.design)
+  implementation(Dependencies.recyclerView)
+  implementation Dependencies.archExtensions
+  kapt Dependencies.archCompiler
+  implementation Dependencies.navigationFragment
+  implementation Dependencies.navigationUI
+  implementation Dependencies.firebaseCore
+  implementation Dependencies.firebaseMessaging
+  implementation Dependencies.firebaseConfig
+  implementation Dependencies.gson
+  implementation Dependencies.rxAndroid
+  implementation Dependencies.rxJava
+  implementation Dependencies.dagger
+  implementation Dependencies.daggerSupport
+  kapt Dependencies.daggerProcessor
+  kapt Dependencies.daggerCompiler
+  implementation Dependencies.okhttp3
+  implementation Dependencies.fresco
+  implementation Dependencies.rootBeer
+  implementation Dependencies.timber
+  implementation Dependencies.facebookLogin
 
-	// ---------------------------------------------------------------------------------------------
-	// Test Libs
-	// ---------------------------------------------------------------------------------------------
-	testImplementation "junit:junit:$versions.junit"
-	testImplementation "org.mockito:mockito-core:$versions.mockito"
-	testImplementation "org.hamcrest:hamcrest-all:$versions.hamcrest"
-	testImplementation "org.robolectric:robolectric:$versions.robolectric"
-	testImplementation "br.com.concretesolutions:requestmatcher:$versions.requestmatcher"
-	testImplementation "com.squareup.okhttp3:mockwebserver:$versions.okhttp"
-	testImplementation "com.jayway.jsonpath:json-path-assert:$versions.jsonpathassert"
-	testImplementation "com.google.code.gson:gson:$versions.gson"
+  // ---------------------------------------------------------------------------------------------
+  // Development and Support Libs
+  // ---------------------------------------------------------------------------------------------
+  implementation(Dependencies.crashlytics) { transitive = true }
+  releaseImplementation Dependencies.leakCanaryNoOp
+  testImplementation Dependencies.leakCanaryNoOp
+  debugImplementation Dependencies.leakCanary
+  debugImplementation Dependencies.leakCanaryFragment
+  debugImplementation Dependencies.stetho
+  debugImplementation Dependencies.stethoOkHttp3
+  debugImplementation Dependencies.traceur
+  debugImplementation(Dependencies.okhttp3LogInterceptor) { exclude module: 'okhttp' }
+  debugImplementation Dependencies.flipper
+  debugImplementation Dependencies.soloader
 
-	androidTestImplementation "junit:junit:$versions.junit"
-	androidTestImplementation "org.mockito:mockito-android:$versions.mockito"
-	androidTestImplementation "com.android.support.test:runner:$versions.testSupportLibrary"
-	androidTestImplementation "com.android.support.test:rules:$versions.testSupportLibrary"
-	androidTestImplementation "com.android.support.test.espresso:espresso-core:$versions.espresso"
-	androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$versions.espresso"
-	androidTestImplementation "com.android.support.test.espresso:espresso-intents:$versions.espresso"
-	androidTestImplementation "com.android.support.test.espresso:espresso-web:$versions.espresso"
-	androidTestImplementation "com.linkedin.testbutler:test-butler-library:$versions.testButler"
+  // ---------------------------------------------------------------------------------------------
+  // Test Libs
+  // ---------------------------------------------------------------------------------------------
+  testImplementation TestDependencies.junit
+  testImplementation TestDependencies.mockito
+  testImplementation TestDependencies.hamcrestAll
+  testImplementation TestDependencies.robolectric
+  testImplementation TestDependencies.okhttp3MockWebserver
+  testImplementation TestDependencies.requestMatcher
+  testImplementation TestDependencies.okhttp3MockWebserver
+  testImplementation TestDependencies.jsonPathAssert
+  testImplementation Dependencies.gson
+
+  androidTestImplementation TestDependencies.junit
+  androidTestImplementation TestDependencies.mockitoAndroid
+  androidTestImplementation TestDependencies.supportTestRunner
+  androidTestUtil TestDependencies.testOrchestrator
+  androidTestImplementation TestDependencies.testRules
+  androidTestImplementation TestDependencies.testEspressoCore
+  androidTestImplementation TestDependencies.testEspressoContrib
+  androidTestImplementation TestDependencies.testEspressoIntents
+  androidTestImplementation TestDependencies.testEspressoWeb
+  androidTestImplementation TestDependencies.testButler
+}
+
+kapt {
+  useBuildCache = true
+  mapDiagnosticLocations = true
 }
 
 apply plugin: 'com.google.gms.google-services'

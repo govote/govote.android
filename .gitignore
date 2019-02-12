@@ -17,6 +17,7 @@ out/
 # Gradle files
 .gradle/
 build/
+!gradle/wrapper/gradle-wrapper.jar
 
 local.properties
 proguard/
@@ -80,13 +81,15 @@ keystores/
 
 # IDEs
 *.iml
-.idea/workspace.xml
-.idea/
+/.idea/
 .project
 .vscode/
 
 # Infer
 infer-out/
+
+# Google Services
+google-services.json
 
 # Project
 .buckd/
@@ -98,4 +101,9 @@ project.properties
 .env
 reports/
 .sonarlint/
-qark/
+qark
+fastlane/report.xml
+.my_recovery/
+
+
+__api_mocks__/

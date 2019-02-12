@@ -1,0 +1,15 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+  implementation project(':api')
+
+  implementation Dependencies.kotlinStandardLib
+  implementation Dependencies.dagger
+  implementation Dependencies.daggerSupport
+  kapt Dependencies.daggerProcessor
+  kapt Dependencies.daggerCompiler
+  implementation(Dependencies.rxAndroid)
+  implementation(Dependencies.rxJava)
+}

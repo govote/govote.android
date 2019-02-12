@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="br.com.govote.android.about">
+
+  <application>
+    <activity
+      android:name=".AboutActivity"
+      android:launchMode="singleTask"
+      android:screenOrientation="portrait" />
+  </application>
+</manifest>
