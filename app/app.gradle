@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs'
 
-apply from: "$rootDir/tools/instrumentation/test-butler.gradle"
 apply from: "$rootDir/tools/coverage.gradle"
 
 final app_name = 'GoVote'
@@ -50,7 +49,7 @@ android {
       release {
         keyAlias System.getenv("KEY_ALIAS")
         keyPassword System.getenv("KEY_PASSWORD")
-        storeFile file("$rootDir/app/distribution/release.keystore")
+        storeFile file("$rootDir/app/distribution/releaseView.keystore")
         storePassword System.getenv("KEYSTORE_PASSWORD")
       }
     }
@@ -73,7 +72,7 @@ android {
       resValue 'string', 'app_name', "1." + app_name + ".debug"
       buildConfigField 'String', 'API_URI', '"http://192.168.0.14:3000"'
       buildConfigField 'String', 'GRAPH_API_URI', '"https://graph.facebook.com/v3.2/"'
-   }
+    }
 
     release {
       zipAlignEnabled true
@@ -89,7 +88,7 @@ android {
 
       ext.betaDistributionGroupAliases = "release"
       ext.betaDistributionNotifications = true
-      ext.betaDistributionReleaseNotesFilePath = "$projectDir/release-notes.txt"
+      ext.betaDistributionReleaseNotesFilePath = "$projectDir/releaseView-notes.txt"
 
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
 
@@ -107,13 +106,17 @@ android {
   }
 
   testOptions {
-    execution 'ANDROID_TEST_ORCHESTRATOR'
+    execution 'ANDROIDX_TEST_ORCHESTRATOR'
     animationsDisabled true
     unitTests {
       includeAndroidResources = true
       returnDefaultValues = true
     }
   }
+
+  useLibrary 'android.test.runner'
+  useLibrary 'android.test.base'
+  useLibrary 'android.test.mock'
 
   applicationVariants.all { variant ->
     if (variant.buildType.name == "release" || BuildUtils.isCI) {
@@ -138,11 +141,10 @@ dependencies {
   // ---------------------------------------------------------------------------------------------
   // Project Libraries
   // ---------------------------------------------------------------------------------------------
-  implementation project(':utils')
+  implementation project(':libs')
   implementation project(':api')
   implementation project(':analytics')
   implementation project(':data')
-  implementation project(':authentication')
   implementation project(':about')
 
   // ---------------------------------------------------------------------------------------------
@@ -198,15 +200,15 @@ dependencies {
   testImplementation TestDependencies.junit
   testImplementation TestDependencies.mockito
   testImplementation TestDependencies.hamcrestAll
-  testImplementation TestDependencies.robolectric
-  testImplementation TestDependencies.okhttp3MockWebserver
   testImplementation TestDependencies.requestMatcher
-  testImplementation TestDependencies.okhttp3MockWebserver
-  testImplementation TestDependencies.jsonPathAssert
   testImplementation Dependencies.gson
 
   androidTestImplementation TestDependencies.junit
   androidTestImplementation TestDependencies.mockitoAndroid
+  androidTestImplementation TestDependencies.testButler
+  androidTestImplementation TestDependencies.junit
+  androidTestImplementation TestDependencies.mockitoAndroid
+  androidTestImplementation "androidx.test:core:${Versions.testCore}"
   androidTestImplementation TestDependencies.supportTestRunner
   androidTestUtil TestDependencies.testOrchestrator
   androidTestImplementation TestDependencies.testRules
@@ -215,6 +217,10 @@ dependencies {
   androidTestImplementation TestDependencies.testEspressoIntents
   androidTestImplementation TestDependencies.testEspressoWeb
   androidTestImplementation TestDependencies.testButler
+  androidTestUtil TestDependencies.testButlerApk
+  androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+  androidTestImplementation 'androidx.test.ext:truth:1.1.0'
+  androidTestImplementation 'com.google.truth:truth:0.42'
 }
 
 kapt {

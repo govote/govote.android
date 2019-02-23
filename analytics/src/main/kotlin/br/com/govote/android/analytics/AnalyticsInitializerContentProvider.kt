@@ -7,7 +7,7 @@ import android.net.Uri
 import com.google.firebase.analytics.FirebaseAnalytics
 
 class AnalyticsInitializerContentProvider : ContentProvider() {
-  
+
   override fun insert(uri: Uri, values: ContentValues?): Uri? = null
 
   override fun query(

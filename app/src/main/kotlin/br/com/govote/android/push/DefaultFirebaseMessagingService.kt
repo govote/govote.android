@@ -1,6 +1,6 @@
 package br.com.govote.android.push
 
-import br.com.govote.android.utils.LogUtility
+import br.com.govote.android.libs.logger.LogUtility
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 

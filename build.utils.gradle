@@ -4,8 +4,6 @@ import java.util.regex.Pattern
 
 import static java.util.regex.Pattern.compile
 
-static def shouldSkip(project) { return project.name == "libs" || project.name == "features" }
-
 static def isAndroidModule(project) {
   return project.plugins.find {
     it.class.name == "com.android.build.gradle.LibraryPlugin" || it.class.name == "com.android.build.gradle.AppPlugin"
@@ -79,6 +77,5 @@ task listLayoutIDs {
   }
 }
 
-ext.shouldSkip = this.&shouldSkip
 ext.isAndroidModule = this.&isAndroidModule
 ext.setPreDex = this.&setPreDex

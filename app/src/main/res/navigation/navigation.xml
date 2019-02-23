@@ -8,11 +8,11 @@
     android:id="@+id/login"
     android:name="br.com.govote.android.authentication.LoginFragment"
     android:label="Login"
-    tools:layout="@layout/login_fragment" />
+    tools:layout="@layout/login" />
 
   <fragment
     android:id="@+id/home"
-    android:name="br.com.govote.android.coordinator.home.HomeFragment"
+    android:name="br.com.govote.android.main.HomeFragment"
     android:label="Home"
     tools:layout="@layout/home_fragment" />
 </navigation>

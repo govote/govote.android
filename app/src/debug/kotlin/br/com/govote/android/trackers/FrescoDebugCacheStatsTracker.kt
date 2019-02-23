@@ -1,6 +1,6 @@
 package br.com.govote.android.trackers
 
-import br.com.govote.android.utils.LogUtility
+import br.com.govote.android.libs.logger.LogUtility
 import com.facebook.cache.common.CacheKey
 import com.facebook.imagepipeline.cache.CountingMemoryCache
 import com.facebook.imagepipeline.cache.ImageCacheStatsTracker

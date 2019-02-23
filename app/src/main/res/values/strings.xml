@@ -17,6 +17,15 @@
   <!-- FEATURES -->
   <!-- ######################################################################################### -->
 
+  <!-- LOGIN -->
+  <string name="login_title">Login</string>
+  <string name="login_terms_and_conditions">By continuing, you agree to our Terms of Service and
+    Privacy Policy
+  </string>
+  <string name="login_button_facebook">Enter with Facebook</string>
+
+  <!-- END FEATURES -->
+
 
   <!-- ERRORS -->
   <string name="error_no_internet_connection">Network unavailable :( \nVerify your data connection

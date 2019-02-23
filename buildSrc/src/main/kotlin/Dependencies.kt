@@ -45,27 +45,3 @@ object Dependencies {
   val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
 }
 
-object TestDependencies {
-  val junit = "junit:junit:${Versions.junit}"
-  val junit5Api = "org.junit.jupiter:junit-jupiter-api:${Versions.junit5}"
-  val junit5Engine = "org.junit.jupiter:junit-jupiter-engine:${Versions.junit5}"
-  val robolectric = "org.robolectric:robolectric:${Versions.robolectric}"
-  val mockito = "org.mockito:mockito-core:${Versions.mockito}"
-  val mockitoAndroid = "org.mockito:mockito-android:${Versions.mockito}"
-  val hamcrestAll = "org.hamcrest:hamcrest-all:${Versions.hamcrest}"
-  val requestMatcher = "br.com.concretesolutions:requestmatcher:${Versions.requestmatcher}"
-  val okhttp3MockWebserver = "com.squareup.okhttp3:mockwebserver:${Versions.okhttp}"
-  val jsonPathAssert = "com.jayway.jsonpath:json-path-assert:${Versions.jsonpathassert}"
-  val testButler = "com.linkedin.testbutler:test-butler-library:${Versions.testButler}"
-
-  val kotlinTest = "org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}"
-  val kotlinTestJUnit = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}"
-
-  val supportTestRunner = "androidx.test:runner:${Versions.testCore}"
-  val testOrchestrator = "androidx.test:orchestrator:${Versions.orchestrator}"
-  val testRules = "androidx.test:rules:${Versions.testCore}"
-  val testEspressoCore = "androidx.test.espresso:espresso-core:${Versions.espresso}"
-  val testEspressoContrib = "androidx.test.espresso:espresso-contrib:${Versions.espresso}"
-  val testEspressoIntents = "androidx.test.espresso:espresso-intents:${Versions.espresso}"
-  val testEspressoWeb = "androidx.test.espresso:espresso-web:${Versions.espresso}"
-}

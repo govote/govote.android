@@ -2,26 +2,25 @@ object Versions {
   val kotlin = "1.3.21"
 
   // support
-  val testCore = "1.1.0"
+  val testCore = "1.0.0"
   val constraintLayout = "1.1.2"
   val orchestrator = "1.1.0"
   val navigation = "1.0.0-alpha04"
 
-  //
   val design = "1.0.0-rc01"
   val androidx = "1.0.0"
-  //
 
   // test dependencies
   val junit = "4.12"
   val junit5 = "5.2.0"
   val hamcrest = "1.3"
-  val testButler = "1.4.0"
-  val robolectric = "3.8"
-  val espresso = "3.1.0-alpha1"
+  val testButler = "2.0.0"
+  val espresso = "3.1.0"
+  val fragmentTest = "1.1.0-alpha04"
   val mockito = "2.23.0"
   val requestmatcher = "2.2.0"
   val jsonpathassert = "2.2.0"
+  val googleTruth = "0.42"
 
   // main dependencies
   val okhttp = "3.11.0"

@@ -9,8 +9,19 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <application
-    android:name=".InstrumentedApp"
+    android:name=".TestGoVoteApp"
     android:allowBackup="false"
     tools:ignore="GoogleAppIndexingWarning"
-    tools:replace="android:name,android:allowBackup" />
+    tools:replace="android:name,android:allowBackup">
+
+    <uses-library
+      android:name="android.test.runner"
+      android:required="false" />
+    <uses-library
+      android:name="android.test.base"
+      android:required="false" />
+    <uses-library
+      android:name="android.test.mock"
+      android:required="false" />
+  </application>
 </manifest>

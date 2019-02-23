@@ -7,16 +7,21 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.mockito.Mockito
-import org.mockito.Mockito.*
+import org.mockito.Mockito.doNothing
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 
+@Suppress("UNCHECKED_CAST")
 @RunWith(JUnit4::class)
 class AnalyticsTest {
-  val analyticsAdapter1: AnalyticsAdapter = mock(AnalyticsAdapter::class.java)
-  val analyticsAdapter2: AnalyticsAdapter = mock(AnalyticsAdapter::class.java)
-  val context: Context = mock(Context::class.java)
-  val activity: Activity = mock(Activity::class.java)
+  
+  private val analyticsAdapter1: AnalyticsAdapter = mock(AnalyticsAdapter::class.java)
+  private val analyticsAdapter2: AnalyticsAdapter = mock(AnalyticsAdapter::class.java)
+  private val context: Context = mock(Context::class.java)
+  private val activity: Activity = mock(Activity::class.java)
 
-  fun <T> any(): T {
+  private fun <T> any(): T {
     Mockito.any<T>()
     return uninitialized()
   }

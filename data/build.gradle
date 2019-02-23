@@ -10,6 +10,6 @@ dependencies {
   implementation Dependencies.daggerSupport
   kapt Dependencies.daggerProcessor
   kapt Dependencies.daggerCompiler
-  implementation(Dependencies.rxAndroid)
-  implementation(Dependencies.rxJava)
+  implementation Dependencies.rxAndroid
+  implementation Dependencies.rxJava
 }

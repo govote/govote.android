@@ -1,7 +1,0 @@
-<resources>
-  <string name="login_title">Login</string>
-  <string name="login_terms_and_conditions">By continuing, you agree to our Terms of Service and
-    Privacy Policy
-  </string>
-  <string name="login_button_facebook">Enter with Facebook</string>
-</resources>

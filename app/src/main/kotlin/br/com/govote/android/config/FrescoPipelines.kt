@@ -4,19 +4,19 @@ import android.content.Context
 import android.graphics.Bitmap
 
 import br.com.govote.android.BuildConfig
-import br.com.govote.android.PerBuildComponentProvider
-import br.com.govote.android.utils.LogUtility
+import br.com.govote.android.libs.logger.LogUtility
 import com.facebook.cache.disk.DiskCacheConfig
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.cache.ImageCacheStatsTracker
 import com.facebook.imagepipeline.cache.MemoryCacheParams
 import com.facebook.imagepipeline.core.ImagePipelineConfig
 
 object FrescoPipelines {
-  fun setup(context: Context) =
+  fun setup(context: Context, imageCacheStatsTracker: ImageCacheStatsTracker) =
     Fresco.initialize(context,
       ImagePipelineConfig.newBuilder(context)
         .setBitmapsConfig(Bitmap.Config.RGB_565)
-        .setImageCacheStatsTracker(PerBuildComponentProvider.getInstance().imageCacheStatsTracker())
+        .setImageCacheStatsTracker(imageCacheStatsTracker)
         .setMainDiskCacheConfig(
           DiskCacheConfig.newBuilder(context)
             .setCacheErrorLogger { _, _, message, throwable -> LogUtility.e(message, throwable!!) }

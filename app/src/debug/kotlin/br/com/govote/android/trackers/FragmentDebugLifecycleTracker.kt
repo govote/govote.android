@@ -6,7 +6,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import br.com.govote.android.GoVoteApp
-import br.com.govote.android.utils.LogUtility
+import br.com.govote.android.libs.logger.LogUtility
 
 class FragmentDebugLifecycleTracker : FragmentManager.FragmentLifecycleCallbacks() {
   override fun onFragmentActivityCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {

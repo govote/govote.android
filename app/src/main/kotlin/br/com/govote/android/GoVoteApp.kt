@@ -5,8 +5,8 @@ import android.app.Application
 import android.content.ComponentCallbacks2
 import br.com.govote.android.config.FrescoPipelines
 import br.com.govote.android.config.RemoteConfig
-import br.com.govote.android.di.DaggerAppComponent
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.cache.ImageCacheStatsTracker
 import com.google.firebase.FirebaseApp
 import com.squareup.leakcanary.RefWatcher
 import dagger.android.AndroidInjector
@@ -25,16 +25,17 @@ open class GoVoteApp : Application(), HasActivityInjector {
   }
 
   @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
+  @Inject lateinit var imageCacheStatsTracker: ImageCacheStatsTracker
 
   override fun onCreate() {
     super.onCreate()
 
-    setupDependenciesManager()
-    FrescoPipelines.setup(this)
+    setupDagger()
+    FrescoPipelines.setup(this, imageCacheStatsTracker)
     FirebaseApp.initializeApp(this)
     RemoteConfig.setup()
 
-    registerActivityLifecycleCallbacks(CurrentActivityLifeCycle())
+    registerActivityLifecycleCallbacks(CurrentActivityLifeCycleCallbacks())
 
     refWatcher = enableLeakCanary()
     instance = this
@@ -55,19 +56,14 @@ open class GoVoteApp : Application(), HasActivityInjector {
     }
   }
 
-  override fun activityInjector(): AndroidInjector<Activity>? {
-    return dispatchingAndroidInjector
-  }
+  override fun activityInjector(): AndroidInjector<Activity>? = dispatchingAndroidInjector
 
-  private fun setupDependenciesManager() {
+  private fun setupDagger() =
     DaggerAppComponent
       .builder()
       .application(this)
       .build()
       .inject(this)
-  }
 
-  protected open fun enableLeakCanary(): RefWatcher {
-    return RefWatcher.DISABLED
-  }
+  protected open fun enableLeakCanary(): RefWatcher = RefWatcher.DISABLED
 }

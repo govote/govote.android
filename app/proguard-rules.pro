@@ -67,7 +67,7 @@
     public static int e(...);
 }
 
--assumenosideeffects class br.com.govote.android.utils.LogUtility {
+-assumenosideeffects class br.com.govote.android.libs.logger.LogUtility {
     public static void d(...);
     public static void w(...);
     public static void e(...);

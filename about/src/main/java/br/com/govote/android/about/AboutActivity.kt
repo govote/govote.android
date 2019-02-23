@@ -7,9 +7,9 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import br.com.govote.android.utils.AppUtils
-import br.com.govote.android.utils.delegates.viewWithId
-import br.com.govote.android.utils.extensions.setToolbar
+import br.com.govote.android.libs.utils.AppUtils
+import br.com.govote.android.libs.delegates.viewIdentifiedBy
+import br.com.govote.android.libs.extensions.setToolbar
 import de.psdev.licensesdialog.LicensesDialog
 
 class AboutActivity : AppCompatActivity() {
@@ -19,9 +19,9 @@ class AboutActivity : AppCompatActivity() {
     }
   }
 
-  private val toolbar: Toolbar by viewWithId(R.id.toolbar)
-  private val appVersion: TextView by viewWithId(R.id.appVersion)
-  private val viewLicenses: TextView by viewWithId(R.id.viewLicenses)
+  private val toolbar: Toolbar by viewIdentifiedBy(R.id.toolbar)
+  private val appVersion: TextView by viewIdentifiedBy(R.id.appVersion)
+  private val viewLicenses: TextView by viewIdentifiedBy(R.id.viewLicenses)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

@@ -3,7 +3,7 @@ import java.nio.file.Paths
 
 rootProject.name = 'GoVote'
 
-include ':app', ':utils', ':api', ':analytics', ':authentication', ':about', ':data'
+include ':app', ':libs', ':api', ':analytics', ':about', ':data'
 
 def buildFileChanged = { project ->
   !Files.exists(Paths.get("$project.projectDir/build.gradle")) && !Files.exists(Paths.get("$project.projectDir/build.gradle.kts"))
@@ -24,19 +24,10 @@ def changeBuildFileName = { project ->
   }
 }
 
-def isGroupDir = { dir -> dir == 'libs' || dir == 'features' }
-
 /**
  * Changes gradle internal build file name reference according
  * to its corresponding module name.
  * This facilitates the visualization in Android Studio project view.
  * The build file name is only changed after user manually change the file.
  */
-rootProject.children.each {
-  if (isGroupDir(it.name)) {
-    it.children.each changeBuildFileName
-    return
-  }
-
-  changeBuildFileName it
-}
+rootProject.children.each { changeBuildFileName it }

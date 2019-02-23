@@ -50,7 +50,7 @@
 
     <!-- Main -->
     <activity
-      android:name="br.com.govote.android.MainActivity"
+      android:name="br.com.govote.android.main.MainActivity"
       android:screenOrientation="portrait"
       android:theme="@style/AppTheme.Launcher">
       <nav-graph android:value="@navigation/navigation" />
@@ -72,17 +72,6 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
-    <!-- Authenticator -->
-    <service
-      android:name="br.com.govote.android.authenticator.AccountAuthenticatorService"
-      android:exported="false"
-      android:process=":auth">
-      <intent-filter>
-        <action android:name="android.accounts.AccountAuthenticator" />
-      </intent-filter>
-      <meta-data
-        android:name="android.accounts.AccountAuthenticator"
-        android:resource="@xml/authenticator" />
-    </service>
+
   </application>
 </manifest>

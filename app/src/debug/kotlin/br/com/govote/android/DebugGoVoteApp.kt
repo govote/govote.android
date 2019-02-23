@@ -2,9 +2,9 @@ package br.com.govote.android
 
 import android.net.TrafficStats
 import android.os.StrictMode
+import br.com.govote.android.libs.logger.LogUtility
 import br.com.govote.android.trackers.ActivityDebugLifecycleTracker
 import br.com.govote.android.trackers.FragmentDebugLifecycleTracker
-import br.com.govote.android.utils.LogUtility
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.android.utils.FlipperUtils
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin
@@ -46,7 +46,7 @@ class DebugGoVoteApp : GoVoteApp() {
         .build()
     )
 
-    trackActivitiesAndFragmentsLifecycleForDebug()
+    trackActivitiesAndFragmentsLifecycle()
 
     Traceur.enableLogging()
     Timber.plant(Timber.DebugTree())
@@ -61,11 +61,10 @@ class DebugGoVoteApp : GoVoteApp() {
     LogUtility.d("[ onTrimMemory ] $level")
   }
 
-  override fun enableLeakCanary(): RefWatcher {
-    return LeakCanary.refWatcher(this)
+  override fun enableLeakCanary(): RefWatcher =
+    LeakCanary.refWatcher(this)
       .listenerServiceClass(RecordLeakService::class.java)
       .buildAndInstall()
-  }
 
   private fun enableStrictMode() {
     StrictMode.setThreadPolicy(
@@ -84,10 +83,6 @@ class DebugGoVoteApp : GoVoteApp() {
     )
   }
 
-  private fun trackActivitiesAndFragmentsLifecycleForDebug() {
-    val fragmentLifecycleTracker = FragmentDebugLifecycleTracker()
-    val activityLifecycleTracker = ActivityDebugLifecycleTracker(fragmentLifecycleTracker)
-
-    registerActivityLifecycleCallbacks(activityLifecycleTracker)
-  }
+  private fun trackActivitiesAndFragmentsLifecycle() =
+    registerActivityLifecycleCallbacks(ActivityDebugLifecycleTracker(FragmentDebugLifecycleTracker()))
 }
