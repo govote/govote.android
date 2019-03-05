@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/bg">
+
+  <TextView
+    android:id="@+id/skip"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="10dp"
+    android:text="@string/onboarding_skip"
+    android:textAlignment="center"
+    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+    android:textColor="@color/secondaryAction"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <fragment
+    android:id="@+id/navHost"
+    android:name="androidx.navigation.fragment.NavHostFragment"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:defaultNavHost="true"
+    app:layout_constraintBottom_toTopOf="@id/onboardingNavigation"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:navGraph="@navigation/main"
+    tools:layout="@layout/onboarding_welcome" />
+
+  <LinearLayout
+    android:id="@+id/onboardingNavigation"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp"
+    android:orientation="vertical"
+    android:padding="10dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent">
+
+    <LinearLayout
+      android:id="@+id/steps"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginBottom="20dp"
+      android:gravity="center_horizontal"
+      android:orientation="horizontal"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/navHost" />
+
+    <Button
+      android:id="@+id/next"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@drawable/btn_circular"
+      android:padding="10dp"
+      android:paddingStart="20dp"
+      android:paddingEnd="20dp"
+      android:text="@string/onboarding_next"
+      android:textAlignment="center"
+      android:textColor="@android:color/white"
+      android:textStyle="bold" />
+  </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

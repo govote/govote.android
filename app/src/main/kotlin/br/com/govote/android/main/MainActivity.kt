@@ -5,90 +5,64 @@ import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
 import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
+import androidx.navigation.Navigation.findNavController
 import br.com.govote.android.R
-import br.com.govote.android.data.users.UserRepository
-import br.com.govote.android.libs.utils.AppUtils
+import br.com.govote.android.authentication.LoginActivity
+import br.com.govote.android.libs.mvp.PresenterActivity
+import br.com.govote.android.libs.ui.ViewPagerAdapter
+import br.com.govote.android.libs.utils.AppUtils.checkPlayServices
+import br.com.govote.android.main.RequestCodes.RECOVER_PLAY_SERVICES
 import com.google.android.material.tabs.TabLayout
-import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
+class MainActivity : PresenterActivity<MainView, MainPresenter>(), MainView,
+                     HasSupportFragmentInjector {
 
-  private var currentTab = 0
-
-  @Inject lateinit var userRepository: UserRepository
-  @Inject lateinit var doubleBackExitBehaviour: DoubleBackExitBehaviour
+  @Inject lateinit var doubleBackClickToExitBehaviour: DoubleBackClickToExitBehaviour
   @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
+  private lateinit var tabsAdapter: ViewPagerAdapter
 
   companion object {
-    private const val REQUEST_CODE_RECOVER_PLAY_SERVICES = 9001
-    private const val REQUEST_CODE_RECOVER_PLAY_SERVICES_WITHOUT_CALLBACK = 9002
-    private const val REQUEST_CODE_WRITE_STORAGE_PERMISSION = 9003
-
-    fun newIntent(context: Context): Intent {
-      val intent = Intent(context, MainActivity::class.java)
-      intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-      return intent
-    }
+    fun newIntent(context: Context): Intent =
+      with(Intent(context, MainActivity::class.java)) {
+        this.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        return this
+      }
   }
 
-  // region Activity Events
-
   override fun onCreate(savedInstanceState: Bundle?) {
-    AndroidInjection.inject(this)
     super.onCreate(savedInstanceState)
 
-    if (!AppUtils.checkPlayServices(
-        this,
-        REQUEST_CODE_RECOVER_PLAY_SERVICES
-      )
-    ) {
+    if (!checkPlayServices(this, RECOVER_PLAY_SERVICES)) {
       finish()
       return
     }
 
-    setLayout()
+    setTheme(R.style.AppTheme)
+    setContentView(R.layout.main_activity)
 
-    if (!userRepository.isAuthenticated()) {
-      findNavController(R.id.navHost).navigate(R.id.login)
-    }
+    viewPresenter.startMainFlowValidations()
   }
 
-  override fun onSupportNavigateUp() = findNavController(R.id.navHost).navigateUp()
-
   override fun onBackPressed() {
-    doubleBackExitBehaviour.exitOnDoubleBack()
+    doubleBackClickToExitBehaviour.exitOnDoubleBack()
     super.onBackPressed()
   }
 
   override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidInjector
 
-  // endregion
-
-  // region Helpers
-
-  private fun setTabIcon(tab: TabLayout.Tab?, @DrawableRes icon: Int) {
-    if (tab == null) {
-      return
-    }
-
-    tab.setIcon(icon)
+  override fun onAuthenticationNeeded() {
+    startActivity(LoginActivity.newClearIntent(this))
+    finish()
   }
 
-  private fun setTabColor(tab: TabLayout.Tab?, color: Int) {
-    tab?.icon?.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+  override fun onAuthenticated() {
+
   }
 
-  private fun setLayout() {
-    setTheme(R.style.AppTheme)
-    setContentView(R.layout.main_activity)
-  }
-
-  // endregion
+  override fun showOnboard() = MainNavigator.toOnboarding(this)
 }

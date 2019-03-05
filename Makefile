@@ -70,7 +70,7 @@ mobsf-down:
 # ##################################################################################################
 
 mock-install:
-	npm install ./@wiremock-toolkit/
+	npm install ./@wiremock-toolkit/ --no-package-lock
 mock:
 	@data_dir=$(CONTEXT)/__api_mocks__ && \
 	cd @wiremock-toolkit && node index mock -p 3000 -d $$data_dir

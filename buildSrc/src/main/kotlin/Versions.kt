@@ -5,7 +5,7 @@ object Versions {
   val testCore = "1.0.0"
   val constraintLayout = "1.1.2"
   val orchestrator = "1.1.0"
-  val navigation = "1.0.0-alpha04"
+  val navigation = "1.0.0-rc02"
 
   val design = "1.0.0-rc01"
   val androidx = "1.0.0"

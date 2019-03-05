@@ -7,5 +7,5 @@ import dagger.Provides
 class AuthenticationModule {
 
   @Provides
-  fun provideLoginView(loginFragment: LoginFragment) : LoginView = loginFragment
+  fun provideLoginView(loginActivity: LoginActivity): LoginView = loginActivity
 }

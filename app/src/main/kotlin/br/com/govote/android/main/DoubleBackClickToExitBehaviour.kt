@@ -8,7 +8,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import br.com.govote.android.R
 import javax.inject.Inject
 
-class DoubleBackExitBehaviour @Inject constructor(private var activity: MainActivity?) :
+class DoubleBackClickToExitBehaviour @Inject constructor(private var activity: MainActivity?) :
   LifecycleObserver {
 
   private var doubleBackToExitPressedOnce = false
@@ -19,11 +19,9 @@ class DoubleBackExitBehaviour @Inject constructor(private var activity: MainActi
     var exitToast: Toast? = null
 
     if (doubleBackToExitPressedOnce) {
-      if (exitToast != null) {
-        exitToast.cancel()
-      }
-
+      exitToast?.cancel()
       activity?.finish()
+
       return
     }
 

@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <!-- main -->
-  <color name="primary">#1C76D0</color>
-  <color name="primaryDark">#005299</color>
+  <color name="primary">#F42B2C</color>
+  <color name="primaryDark">#F3222F</color>
   <color name="secondaryDark">#8e8e8e</color>
-  <color name="accent">#C29D58</color>
+  <color name="accent">#FBB234</color>
   <color name="textHint">#A5CDEE</color>
-  <color name="bg">#F3F3F3</color>
+  <color name="bg">#F8F4F1</color>
+  <color name="secondaryAction">#8e8e8e</color>
+
+  <!-- text -->
+  <color name="primaryText">#383737</color>
+
+  <!-- pager -->
+  <color name="page">#DFDFDF</color>
 
   <!-- tabs -->
   <color name="tab_unselected">#C3C8D0</color>

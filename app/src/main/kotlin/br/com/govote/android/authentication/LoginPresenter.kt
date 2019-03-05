@@ -14,14 +14,10 @@ class LoginPresenter @Inject constructor(
 
   fun loginWithFacebook(token: String) {
     addSubscription(
-      authenticationRepository.authenticate(
-        LoginArgs(
-          token
-        )
-      )
+      authenticationRepository.authenticate(LoginArgs(token))
         .subscribeOn(Schedulers.io())
         .observeOn(mainThread())
-        .subscribe({ getView().onSuccessfulLogin() }, { getView().onLoginError() })
+        .subscribe({ getView().onSuccessfulLogin() }, { getView().onLoginError(it as Exception) })
     )
   }
 }

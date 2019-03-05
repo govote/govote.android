@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import br.com.govote.android.api.bff.BffApi
 import br.com.govote.android.api.graphapi.GraphApi
 import br.com.govote.android.data.authentication.AuthenticationRepository
-import br.com.govote.android.data.users.UserRepository
+import br.com.govote.android.data.onboarding.OnboardingRepository
 import dagger.Module
 import dagger.Provides
 
@@ -12,13 +12,16 @@ import dagger.Provides
 class DataModule {
 
   @Provides
-  fun provideUserRepository(sharedPreferences: SharedPreferences): UserRepository =
-    UserRepository(sharedPreferences)
-
-  @Provides
   fun provideAuthenticationRepository(
     graphApi: GraphApi,
-    bffApi: BffApi
+    bffApi: BffApi,
+    sharedPreferences: SharedPreferences
   ): AuthenticationRepository =
-    AuthenticationRepository(graphApi, bffApi)
+    AuthenticationRepository(graphApi, bffApi, sharedPreferences)
+
+  @Provides
+  fun provideOnboardingRepository(
+    sharedPreferences: SharedPreferences
+  ): OnboardingRepository =
+    OnboardingRepository(sharedPreferences)
 }

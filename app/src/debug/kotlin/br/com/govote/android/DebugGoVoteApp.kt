@@ -50,7 +50,6 @@ class DebugGoVoteApp : GoVoteApp() {
 
     Traceur.enableLogging()
     Timber.plant(Timber.DebugTree())
-    TrafficStats.setThreadStatsTag(1)
 
     // strict mode should be enabled at to end to avoid errors caused by certain libraries initialization
     enableStrictMode()

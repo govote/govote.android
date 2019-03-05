@@ -5,12 +5,12 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 
-open class UX<A : LifecycleOwner> constructor(private var screen: A?) : LifecycleObserver {
+abstract class UX<A : LifecycleOwner> constructor(private var screen: A?) : LifecycleObserver {
 
-  protected fun getScreen() = screen
+  protected fun getContext(): A = screen!!
 
   @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-  fun clearScreen() {
+  fun clearContext() {
     screen = null
   }
 }

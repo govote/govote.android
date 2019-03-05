@@ -6,5 +6,5 @@ interface LoginView : PresenterView {
 
   fun onSuccessfulLogin()
 
-  fun onLoginError()
+  fun onLoginError(exception: Exception)
 }

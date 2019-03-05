@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/main"
+  app:startDestination="@id/home">
+
+  <fragment
+    android:id="@+id/home"
+    android:name="br.com.govote.android.main.HomeFragment"
+    android:label="Home"
+    tools:layout="@layout/home_fragment">
+    <action
+      android:id="@+id/toOnboarding"
+      app:destination="@id/onboarding"
+      app:launchSingleTop="true" />
+  </fragment>
+
+  <activity
+    android:id="@+id/onboarding"
+    android:name="br.com.govote.android.onboarding.OnboardingActivity"
+    tools:layout="@layout/onboarding" />
+
+  <fragment
+    android:id="@+id/welcome"
+    android:name="br.com.govote.android.onboarding.WelcomeFragment"
+    android:label="@string/onboarding_welcome"
+    tools:layout="@layout/onboarding_welcome">
+    <action
+      android:id="@+id/toChooseDeputyAndParty"
+      app:destination="@id/chooseDeputyAndParty" />
+  </fragment>
+
+  <fragment
+    android:id="@+id/chooseDeputyAndParty"
+    android:name="br.com.govote.android.onboarding.ChoosePreferencesFragment"
+    android:label="@string/onboarding_choose_deputy_party"
+    tools:layout="@layout/onboarding_deputy_party_selector">
+    <action
+      android:id="@+id/toOnboardingDone"
+      app:destination="@id/onboardingDone" />
+  </fragment>
+
+  <fragment
+    android:id="@+id/onboardingDone"
+    android:name="br.com.govote.android.onboarding.DoneFragment"
+    android:label="@string/onboarding_done"
+    tools:layout="@layout/onboarding_deputy_party_selector">
+    <action
+      android:id="@+id/toHome"
+      app:destination="@id/main" />
+  </fragment>
+</navigation>

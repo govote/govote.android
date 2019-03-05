@@ -4,8 +4,8 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class LoginFragmentProvider {
+abstract class LoginActivityProvider {
 
   @ContributesAndroidInjector(modules = [AuthenticationModule::class])
-  abstract fun bindLoginFragment(): LoginFragment
+  abstract fun contributesLoginActivity(): LoginActivity
 }

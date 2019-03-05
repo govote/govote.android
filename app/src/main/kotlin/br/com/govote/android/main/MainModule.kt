@@ -7,5 +7,8 @@ import dagger.Provides
 internal class MainModule {
 
   @Provides
-  fun provideDoubleBackExitBehaviour(activity: MainActivity) = DoubleBackExitBehaviour(activity)
+  fun provideDoubleBackExitBehaviour(activity: MainActivity) = DoubleBackClickToExitBehaviour(activity)
+
+  @Provides
+  fun provideMainView(mainActivity: MainActivity): MainView = mainActivity
 }

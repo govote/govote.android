@@ -5,7 +5,7 @@ object Dependencies {
   val recyclerView = "androidx.recyclerview:recyclerview:${Versions.androidx}"
   val appcompat = "androidx.appcompat:appcompat:${Versions.androidx}"
   val constraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
-  val navigationFragment = "android.arch.navigation:navigation-fragment-ktx:${Versions.navigation}"
+  val navigationFragment = "android.arch.navigation:navigation-fragment:${Versions.navigation}"
   val navigationUI = "android.arch.navigation:navigation-ui:${Versions.navigation}"
 
   val firebaseCore = "com.google.firebase:firebase-core:${Versions.firebase_core}"
