@@ -3,7 +3,7 @@ import java.nio.file.Paths
 
 rootProject.name = 'GoVote'
 
-include ':app', ':libs', ':api', ':analytics', ':about', ':data'
+include ':app', ':android-utils', ':api', ':analytics', ':data', ':experimental'
 
 def buildFileChanged = { project ->
   !Files.exists(Paths.get("$project.projectDir/build.gradle")) && !Files.exists(Paths.get("$project.projectDir/build.gradle.kts"))

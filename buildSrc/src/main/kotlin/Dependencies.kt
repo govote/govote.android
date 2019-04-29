@@ -5,8 +5,8 @@ object Dependencies {
   val recyclerView = "androidx.recyclerview:recyclerview:${Versions.androidx}"
   val appcompat = "androidx.appcompat:appcompat:${Versions.androidx}"
   val constraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
-  val navigationFragment = "android.arch.navigation:navigation-fragment:${Versions.navigation}"
-  val navigationUI = "android.arch.navigation:navigation-ui:${Versions.navigation}"
+  val navigationFragment = "androidx.navigation:navigation-fragment:${Versions.navigation}"
+  val navigationUI = "androidx.navigation:navigation-ui:${Versions.navigation}"
 
   val firebaseCore = "com.google.firebase:firebase-core:${Versions.firebase_core}"
   val firebaseMessaging = "com.google.firebase:firebase-messaging:${Versions.firebase_messaging}"
@@ -36,8 +36,8 @@ object Dependencies {
   val flipper = "com.facebook.flipper:flipper:${Versions.flipper}"
   val soloader = "com.facebook.soloader:soloader:${Versions.soloader}"
 
-  val archExtensions = "android.arch.lifecycle:extensions:${Versions.arch}"
-  val archCompiler = "android.arch.lifecycle:compiler:${Versions.arch}"
+  val archExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.arch}"
+  val archCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.arch}"
 
   val dagger = "com.google.dagger:dagger-android:${Versions.dagger}"
   val daggerSupport = "com.google.dagger:dagger-android-support:${Versions.dagger}"

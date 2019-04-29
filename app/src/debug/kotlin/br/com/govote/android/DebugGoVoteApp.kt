@@ -1,6 +1,5 @@
 package br.com.govote.android
 
-import android.net.TrafficStats
 import android.os.StrictMode
 import br.com.govote.android.libs.logger.LogUtility
 import br.com.govote.android.trackers.ActivityDebugLifecycleTracker

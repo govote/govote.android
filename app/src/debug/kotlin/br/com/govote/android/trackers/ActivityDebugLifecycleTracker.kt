@@ -19,25 +19,20 @@ class ActivityDebugLifecycleTracker(private val trackerDebug: FragmentDebugLifec
     }
   }
 
-  override fun onActivityStarted(activity: Activity?) {
+  override fun onActivityStarted(activity: Activity?) =
     LogUtility.d("Activity STARTED --> " + activityName(activity))
-  }
 
-  override fun onActivityResumed(activity: Activity?) {
+  override fun onActivityResumed(activity: Activity?) =
     LogUtility.d("Activity RESUMED --> " + activityName(activity))
-  }
 
-  override fun onActivityPaused(activity: Activity?) {
+  override fun onActivityPaused(activity: Activity?) =
     LogUtility.d("Activity PAUSED --> " + activityName(activity))
-  }
 
-  override fun onActivityStopped(activity: Activity?) {
+  override fun onActivityStopped(activity: Activity?) =
     LogUtility.d("Activity STOPPED --> " + activityName(activity))
-  }
 
-  override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
+  override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) =
     LogUtility.d("Activity SAVED INSTANCE STATE --> " + activityName(activity))
-  }
 
   override fun onActivityDestroyed(activity: Activity?) {
     LogUtility.d("Activity DESTROYED --> " + activityName(activity))

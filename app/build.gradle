@@ -1,0 +1,232 @@
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: "androidx.navigation.safeargs.kotlin"
+
+apply from: "$rootDir/tools/coverage.gradle"
+
+final app_name = 'GoVote'
+
+android {
+  defaultConfig {
+    applicationId "br.com.govote.android"
+    multiDexEnabled false
+    testInstrumentationRunner "br.com.govote.android.InstrumentationRunner"
+    testInstrumentationRunnerArguments clearPackageData: "true"
+  }
+
+  dexOptions {
+    javaMaxHeapSize "2g"
+    preDexLibraries !BuildUtils.isCI
+    maxProcessCount BuildUtils.cores
+  }
+
+  aaptOptions { cruncherEnabled false }
+
+  lintOptions {
+    check 'Interoperability'
+    checkAllWarnings true
+    warningsAsErrors true
+    lintConfig file("$projectDir/lint.xml")
+    baseline file("$projectDir/lint-baseline.xml")
+
+    if (BuildUtils.isCI) {
+      textReport true
+      textOutput 'stdout'
+    }
+  }
+
+  signingConfigs {
+    debug {
+      keyAlias 'androiddebugkey'
+      keyPassword 'android'
+      storeFile file("$rootDir/app/distribution/debug.keystore")
+      storePassword 'android'
+    }
+
+    if (System.getenv("KEY_ALIAS") != null) {
+      release {
+        keyAlias System.getenv("KEY_ALIAS")
+        keyPassword System.getenv("KEY_PASSWORD")
+        storeFile file("$rootDir/app/distribution/releaseView.keystore")
+        storePassword System.getenv("KEYSTORE_PASSWORD")
+      }
+    }
+  }
+
+  buildTypes {
+    debug {
+      versionNameSuffix ".debug"
+      minifyEnabled false
+      useProguard false
+      debuggable true
+      signingConfig signingConfigs.debug
+
+      ext.alwaysUpdateBuildId = false
+      ext.enableCrashlytics = false
+
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
+      testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+
+      resValue 'string', 'app_name', "1." + app_name + ".debug"
+      buildConfigField 'String', 'API_URI',  "\"$env.API_URI\""
+      buildConfigField 'String', 'GRAPH_API_URI', '"https://graph.facebook.com/v3.2/"'
+    }
+
+    release {
+      zipAlignEnabled true
+      shrinkResources true
+      minifyEnabled true
+      crunchPngs false
+
+      if (System.getenv("KEY_ALIAS") == null) {
+        signingConfig signingConfigs.debug
+      } else {
+        signingConfig signingConfigs.release
+      }
+
+      ext.betaDistributionGroupAliases = "release"
+      ext.betaDistributionNotifications = true
+      ext.betaDistributionReleaseNotesFilePath = "$projectDir/releaseView-notes.txt"
+
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
+
+      resValue 'string', 'app_name', app_name
+      buildConfigField 'String', 'API_URI', '"http://bffApi.prod"'
+      buildConfigField 'String', 'GRAPH_API_URI', '"https://graph.facebook.com/v3.2/"'
+    }
+
+    applicationVariants.all { variant ->
+      if (variant.buildType.name == "debug") {
+        variant.mergedFlavor.resourceConfigurations.clear()
+        variant.mergedFlavor.resourceConfigurations.add("en")
+        variant.mergedFlavor.resourceConfigurations.add("xxhdpi")
+      }
+    }
+  }
+
+  testOptions {
+    execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    animationsDisabled true
+    unitTests {
+      includeAndroidResources = true
+      returnDefaultValues = true
+    }
+  }
+
+  useLibrary 'android.test.runner'
+  useLibrary 'android.test.base'
+  useLibrary 'android.test.mock'
+
+  applicationVariants.all { variant ->
+    if (variant.buildType.name == "release" || BuildUtils.isCI) {
+      variant.outputs.each { output ->
+        output.versionNameOverride = file("$rootDir/VERSION").text
+        //output.versionOverride = versionCode = Integer.valueOf(file("$rootDir/VERSION_CODE").readLines()[0].trim())
+      }
+    }
+  }
+
+  packagingOptions {
+    exclude 'kotlin/**'
+    exclude 'META-INF/*.kotlin_module'
+    exclude 'META-INF/*.version'
+    exclude 'META-INF/LICENSE.txt'
+    exclude 'META-INF/NOTICE.txt'
+    exclude 'META-INF/rxjava.properties'
+  }
+}
+
+dependencies {
+  // ---------------------------------------------------------------------------------------------
+  // Project Libraries
+  // ---------------------------------------------------------------------------------------------
+  implementation project(':android-utils')
+  implementation project(':api')
+  implementation project(':analytics')
+  implementation project(':data')
+
+  // ---------------------------------------------------------------------------------------------
+  // Kotlin
+  // ---------------------------------------------------------------------------------------------
+  implementation Dependencies.kotlinStandardLib
+
+  // ---------------------------------------------------------------------------------------------
+  // Dependencies
+  // ---------------------------------------------------------------------------------------------
+  implementation Dependencies.constraintLayout
+  implementation(Dependencies.appcompat)
+  implementation(Dependencies.design)
+  implementation(Dependencies.recyclerView)
+  implementation Dependencies.archExtensions
+  kapt Dependencies.archCompiler
+  implementation Dependencies.navigationFragment
+  implementation Dependencies.navigationUI
+  implementation Dependencies.firebaseCore
+  implementation Dependencies.firebaseMessaging
+  implementation Dependencies.firebaseConfig
+  implementation Dependencies.gson
+  implementation Dependencies.rxAndroid
+  implementation Dependencies.rxJava
+  implementation Dependencies.dagger
+  implementation Dependencies.daggerSupport
+  kapt Dependencies.daggerProcessor
+  kapt Dependencies.daggerCompiler
+  implementation Dependencies.okhttp3
+  implementation Dependencies.fresco
+  implementation Dependencies.rootBeer
+  implementation Dependencies.timber
+  implementation Dependencies.facebookLogin
+  implementation Dependencies.licensesDialog
+
+  // ---------------------------------------------------------------------------------------------
+  // Development and Support Libs
+  // ---------------------------------------------------------------------------------------------
+  implementation(Dependencies.crashlytics) { transitive = true }
+  releaseImplementation Dependencies.leakCanaryNoOp
+  testImplementation Dependencies.leakCanaryNoOp
+  debugImplementation Dependencies.leakCanary
+  debugImplementation Dependencies.leakCanaryFragment
+  debugImplementation Dependencies.stetho
+  debugImplementation Dependencies.stethoOkHttp3
+  debugImplementation Dependencies.traceur
+  debugImplementation(Dependencies.okhttp3LogInterceptor) { exclude module: 'okhttp' }
+  debugImplementation Dependencies.flipper
+  debugImplementation Dependencies.soloader
+
+  // ---------------------------------------------------------------------------------------------
+  // Test Libs
+  // ---------------------------------------------------------------------------------------------
+  testImplementation TestDependencies.junit
+  testImplementation TestDependencies.mockito
+  testImplementation TestDependencies.hamcrestAll
+  testImplementation TestDependencies.requestMatcher
+  testImplementation Dependencies.gson
+
+  androidTestImplementation TestDependencies.junit
+  androidTestImplementation TestDependencies.mockitoAndroid
+  androidTestImplementation TestDependencies.testButler
+  androidTestImplementation TestDependencies.junit
+  androidTestImplementation TestDependencies.mockitoAndroid
+  androidTestImplementation "androidx.test:core:${Versions.testCore}"
+  androidTestImplementation TestDependencies.supportTestRunner
+  androidTestUtil TestDependencies.testOrchestrator
+  androidTestImplementation TestDependencies.testRules
+  androidTestImplementation TestDependencies.testEspressoCore
+  androidTestImplementation TestDependencies.testEspressoContrib
+  androidTestImplementation TestDependencies.testEspressoIntents
+  androidTestImplementation TestDependencies.testEspressoWeb
+  androidTestImplementation TestDependencies.testButler
+  androidTestUtil TestDependencies.testButlerApk
+  androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+  androidTestImplementation 'androidx.test.ext:truth:1.1.0'
+  androidTestImplementation 'com.google.truth:truth:0.42'
+}
+
+kapt {
+  useBuildCache = true
+  mapDiagnosticLocations = true
+}
+
+apply plugin: 'com.google.gms.google-services'

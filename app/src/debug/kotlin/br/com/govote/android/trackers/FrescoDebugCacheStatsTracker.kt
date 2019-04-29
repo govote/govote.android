@@ -6,12 +6,13 @@ import com.facebook.imagepipeline.cache.CountingMemoryCache
 import com.facebook.imagepipeline.cache.ImageCacheStatsTracker
 
 class FrescoDebugCacheStatsTracker : ImageCacheStatsTracker {
+  override fun onDiskCacheHit(cacheKey: CacheKey?) = LogUtility.d("[ Fresco Disk Cache Hit ]")
+
   override fun onBitmapCachePut() {
   }
 
-  override fun onBitmapCacheHit(cacheKey: CacheKey) {
+  override fun onBitmapCacheHit(cacheKey: CacheKey) =
     LogUtility.d("[ Fresco Bitmap Cache Hit ] $cacheKey")
-  }
 
   override fun onBitmapCacheMiss() {
   }
@@ -19,22 +20,16 @@ class FrescoDebugCacheStatsTracker : ImageCacheStatsTracker {
   override fun onMemoryCachePut() {
   }
 
-  override fun onMemoryCacheHit(cacheKey: CacheKey) {
+  override fun onMemoryCacheHit(cacheKey: CacheKey) =
     LogUtility.d("[ Fresco Memory Cache Hit ] $cacheKey")
-  }
 
   override fun onMemoryCacheMiss() {
   }
 
-  override fun onStagingAreaHit(cacheKey: CacheKey) {
+  override fun onStagingAreaHit(cacheKey: CacheKey) =
     LogUtility.d("[ Fresco Staging Area Hit ] $cacheKey")
-  }
 
   override fun onStagingAreaMiss() {
-  }
-
-  override fun onDiskCacheHit() {
-    LogUtility.d("[ Fresco Disk Cache Hit ]")
   }
 
   override fun onDiskCacheMiss() {

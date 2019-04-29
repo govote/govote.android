@@ -35,7 +35,7 @@ class OnboardingActivity : AppCompatActivity(), HasSupportFragmentInjector {
   private val pagination = arrayOfNulls<ImageView>(MAX_ONBOARDING_STEPS)
 
   companion object {
-    private const val MAX_ONBOARDING_STEPS = 3
+    private const val MAX_ONBOARDING_STEPS = 2
 
     fun newIntent(context: Context): Intent =
       with(Intent(context, OnboardingActivity::class.java)) {
@@ -65,7 +65,6 @@ class OnboardingActivity : AppCompatActivity(), HasSupportFragmentInjector {
     next.setOnClickListener {
       when (navController.currentDestination?.id) {
         R.id.welcome -> navController.navigate(R.id.toChooseDeputyAndParty)
-        R.id.chooseDeputyAndParty -> navController.navigate(R.id.toOnboardingDone)
         R.id.onboardingDone -> onboardingNavigator.toMainScreen()
       }
     }

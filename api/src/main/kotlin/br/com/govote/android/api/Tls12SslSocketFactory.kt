@@ -12,7 +12,7 @@ class Tls12SslSocketFactory internal constructor() : SSLSocketFactory() {
     private val PROTOCOL = TlsVersion.TLS_1_2.toString()
   }
 
-  private val socketFactory: SSLSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
+  private val socketFactory: SSLSocketFactory = getDefault() as SSLSocketFactory
 
   override fun getDefaultCipherSuites(): Array<String> {
     return socketFactory.defaultCipherSuites

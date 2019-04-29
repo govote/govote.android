@@ -5,5 +5,24 @@
   android:id="@+id/onboardingNav"
   app:startDestination="@id/onboarding">
 
+  <activity
+    android:id="@+id/onboarding"
+    android:name="br.com.govote.android.onboarding.OnboardingActivity"
+    tools:layout="@layout/onboarding" />
 
+  <fragment
+    android:id="@+id/welcome"
+    android:name="br.com.govote.android.onboarding.WelcomeFragment"
+    android:label="@string/onboarding_welcome"
+    tools:layout="@layout/onboarding_welcome">
+    <action
+      android:id="@+id/toChooseDeputyAndParty"
+      app:destination="@id/onboardingDone" />
+  </fragment>
+
+  <fragment
+    android:id="@+id/onboardingDone"
+    android:name="br.com.govote.android.onboarding.DoneFragment"
+    android:label="@string/onboarding_done"
+    tools:layout="@layout/onboarding_deputy_party_selector" />
 </navigation>

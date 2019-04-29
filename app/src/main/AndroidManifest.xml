@@ -44,7 +44,6 @@
       android:launchMode="singleTask"
       android:screenOrientation="portrait"
       android:theme="@style/AppTheme.Launcher">
-      <nav-graph android:value="@navigation/main" />
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
@@ -53,7 +52,7 @@
 
     <!-- Authentication -->
     <activity
-      android:name=".authentication.LoginActivity"
+      android:name=".auth.LoginActivity"
       android:launchMode="singleTask"
       android:screenOrientation="portrait" />
 
@@ -64,13 +63,18 @@
       android:launchMode="singleTask"
       android:screenOrientation="portrait" />
 
+    <activity
+      android:name=".about.AboutActivity"
+      android:launchMode="singleTask"
+      android:screenOrientation="portrait" />
+
 
     <!-- Services -->
     <!-- ##################################################################################  -->
 
     <!-- Firebase -->
     <service
-      android:name=".push.DefaultFirebaseMessagingService"
+      android:name="br.com.govote.android.infrastructure.push.FirebaseDefaultMessagingService"
       tools:ignore="ExportedService">
       <intent-filter>
         <action android:name="com.google.firebase.MESSAGING_EVENT" />

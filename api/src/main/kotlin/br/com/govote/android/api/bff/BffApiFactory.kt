@@ -16,11 +16,11 @@ object BffApiFactory {
   operator fun get(
     @NonNull okBuilder: OkHttpClient.Builder,
     @NonNull gson: Gson,
-    @NonNull config: Config
+    @NonNull bffConfig: BffConfig
   ): BffApi {
 
     if (bffApi == null) {
-      bffApi = build(okBuilder, gson, config)
+      bffApi = build(okBuilder, gson, bffConfig)
     }
 
     return bffApi as BffApi
@@ -29,9 +29,9 @@ object BffApiFactory {
   fun build(
     @NonNull okBuilder: OkHttpClient.Builder,
     @NonNull gson: Gson,
-    @NonNull config: Config): BffApi {
-    val httpCacheDirectory = File(config.cacheDir, config.cacheName)
-    val cacheSize = config.cacheSize
+    @NonNull bffConfig: BffConfig): BffApi {
+    val httpCacheDirectory = File(bffConfig.cacheDir, bffConfig.cacheName)
+    val cacheSize = bffConfig.cacheSize
     val cache = Cache(httpCacheDirectory, cacheSize.toLong())
 
     okBuilder
@@ -40,7 +40,7 @@ object BffApiFactory {
       .followSslRedirects(true)
 
     return Retrofit.Builder()
-      .baseUrl(config.uri)
+      .baseUrl(bffConfig.uri)
       .addConverterFactory(GsonConverterFactory.create(gson))
       .addCallAdapterFactory(ApiAdapterFactory())
       .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

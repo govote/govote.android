@@ -14,6 +14,10 @@
   <string name="navigation_drawer_close">Close navigation drawer</string>
 
 
+  <!-- COMMONS -->
+  <string name="close">Close</string>
+
+
   <!-- FEATURES -->
   <!-- ######################################################################################### -->
 
@@ -31,6 +35,16 @@
   <string name="onboarding_welcome_subtitle">Now you can follow federal deputies projects in the palm of your hand.\n\nYou can also vote in propositions in a "Tinder like" way without knowing who an which party it is.</string>
   <string name="onboarding_choose_deputy_party">Choose a party and a deputy to follow</string>
   <string name="onboarding_done">Done! Enjoy :)</string>
+
+  <!-- ABOUT -->
+  <string name="about_title">About</string>
+  <string name="double_back_to_exit">Click BACK one more time to exit</string>
+  <string name="version">Version</string>
+  <string name="version_description">Version %s</string>
+  <string name="licenses_description">This project contains several open-source libraries.
+    See licenses clicking on link below.
+  </string>
+  <string name="licenses">Licenses</string>
 
   <!-- END FEATURES -->
 

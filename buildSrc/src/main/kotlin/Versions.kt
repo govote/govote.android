@@ -1,11 +1,12 @@
 object Versions {
-  val kotlin = "1.3.21"
+  val kotlin = "1.3.31"
 
   // support
   val testCore = "1.0.0"
   val constraintLayout = "1.1.2"
   val orchestrator = "1.1.0"
-  val navigation = "1.0.0-rc02"
+  val navigation = "2.1.0-alpha02"
+  val navigation_safeargs_gradle_plugin = "1.0.0"
 
   val design = "1.0.0-rc01"
   val androidx = "1.0.0"
@@ -23,14 +24,14 @@ object Versions {
   val googleTruth = "0.42"
 
   // main dependencies
-  val okhttp = "3.11.0"
-  val retrofit = "2.4.0"
+  val okhttp = "3.14.1"
+  val retrofit = "2.5.0"
   val play_services = "16.0.1"
-  val firebase_core = "16.0.4"
-  val firebase_messaging = "17.3.4"
-  val firebase_remote_config = "16.1.0"
+  val firebase_core = "16.0.8"
+  val firebase_messaging = "17.6.0"
+  val firebase_remote_config = "16.5.0"
   val gson = "2.8.5"
-  val fresco = "1.9.0"
+  val fresco = "1.13.0"
   val rxAndroid = "2.0.2"
   val rxJava = "2.1.16"
   val sqlbrite = "3.1.0"
@@ -38,7 +39,7 @@ object Versions {
   val crashlytics = "2.9.5"
   val traceur = "1.0.1"
   val dagger = "2.16"
-  val fabric = "1.27.1"
+  val fabric = "1.28.1"
   val rootbeer = "0.0.7"
   val google_services = "4.2.0"
   val owasp_dependency_check = "3.2.1"
@@ -47,7 +48,7 @@ object Versions {
   val facebook_sdk = "4.33.0"
 
   // architecture components
-  val arch = "1.1.1"
+  val arch = "2.1.0-alpha04"
 
   // utils
   val leakCanary = "1.6.2"

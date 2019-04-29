@@ -1,8 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 apply plugin: "org.owasp.dependencycheck"
 apply plugin: "org.sonarqube"
 apply from: "$rootDir/build.utils.gradle"
+apply from: "$rootDir/dotenv.gradle"
 
 buildscript {
   ext.kotlin_version = Versions.kotlin
@@ -15,7 +14,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.0-alpha06'
+    classpath 'com.android.tools.build:gradle:3.4.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     classpath "org.jacoco:org.jacoco.core:${Versions.jacoco}"
     classpath "com.google.gms:google-services:${Versions.google_services}"
@@ -24,10 +23,12 @@ buildscript {
     classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${Versions.sonar}"
     classpath "gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:${Versions.detekt}"
     classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:${Versions.coveralls}"
-    classpath "android.arch.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
+    classpath "androidx.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 }
+
+loadEnvs()
 
 ext.java_version = JavaVersion.VERSION_1_8
 
@@ -38,42 +39,23 @@ allprojects {
   }
 
   apply plugin: 'jacoco'
-  apply from: "$rootDir/dotenv.gradle"
 
   jacoco {
     toolVersion = Versions.jacoco
-  }
-
-  configurations.all {
-    resolutionStrategy {
-      eachDependency { details ->
-        if (details.requested.group == 'com.android.support') {
-          details.useVersion Versions.supportLibrary
-        }
-      }
-    }
   }
 
   tasks.withType(JavaCompile) {
     sourceCompatibility = java_version
     targetCompatibility = java_version
 
-    configure(options) {
-      options.compilerArgs << "-Xlint:deprecation"
-      options.encoding = "utf-8"
-      options.incremental = true
-      options.fork = true
-    }
-  }
-
-  tasks.withType(KotlinCompile).all {
-    kotlinOptions {
-      jvmTarget = java_version
-    }
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    options.encoding = "utf-8"
+    options.incremental = true
+    options.fork = true
   }
 
   tasks.withType(Test) {
-    if (project.hasProperty("skipReports")) {
+    if (project.hasProperty("test.reports.skip")) {
       reports.html.enabled = true
       reports.junitXml.enabled = true
     }

@@ -6,10 +6,19 @@ import javax.inject.Inject
 class OnboardingRepository @Inject constructor(private val sharedPreferences: SharedPreferences) {
 
   companion object {
-    private const val ONBOARDING_KEY = "onboarding.show"
+    private const val ONBOARDING_KEY = "onboarding.viewed"
   }
 
-  fun showOnboarding() = sharedPreferences.getBoolean(ONBOARDING_KEY, true)
+  fun showOnboarding(): Boolean {
 
-  fun markAsViewed() = sharedPreferences.edit().putBoolean(ONBOARDING_KEY, false)
+    val isShowing = sharedPreferences.getBoolean(ONBOARDING_KEY, false)
+
+    if (isShowing) {
+      markAsViewed()
+    }
+
+    return isShowing
+  }
+
+  private fun markAsViewed() = sharedPreferences.edit().putBoolean(ONBOARDING_KEY, true).apply()
 }

@@ -13,6 +13,7 @@ import javax.inject.Singleton
 
 @Module
 internal class PerBuildModule {
+  
   @Provides
   @Singleton
   fun okHttpBuilder(): OkHttpClient.Builder =

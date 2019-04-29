@@ -4,7 +4,7 @@ import br.com.concretesolutions.requestmatcher.LocalTestRequestMatcherRule
 import br.com.concretesolutions.requestmatcher.RequestMatcherRule
 import br.com.govote.android.api.bff.BffApi
 import br.com.govote.android.api.bff.BffApiFactory
-import br.com.govote.android.api.bff.Config
+import br.com.govote.android.api.bff.BffConfig
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
@@ -49,6 +49,6 @@ class BffApiTest {
   private fun initServices() {
     val rootUrl = serverRule.url("/").toString()
     val folder = File.createTempFile("tmp", ".tmp")
-    bffApi = BffApiFactory.build(OkHttpClient.Builder(), Gson(), Config(rootUrl, folder, "cache", 1024))
+    bffApi = BffApiFactory.build(OkHttpClient.Builder(), Gson(), BffConfig(rootUrl, folder, "cache", 1024))
   }
 }

@@ -9,40 +9,34 @@ import br.com.govote.android.GoVoteApp
 import br.com.govote.android.libs.logger.LogUtility
 
 class FragmentDebugLifecycleTracker : FragmentManager.FragmentLifecycleCallbacks() {
-  override fun onFragmentActivityCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
+  override fun onFragmentActivityCreated(fm: FragmentManager, f: Fragment,
+                                         savedInstanceState: Bundle?) =
     LogUtility.d("Fragment CREATED --> " + f.javaClass.simpleName)
-  }
 
-  override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+  override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View,
+                                     savedInstanceState: Bundle?) =
     LogUtility.d("Fragment VIEW CREATED --> " + f.javaClass.simpleName)
-  }
 
-  override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
+  override fun onFragmentStarted(fm: FragmentManager, f: Fragment) =
     LogUtility.d("Fragment STARTED --> " + f.javaClass.simpleName)
-  }
 
-  override fun onFragmentAttached(fm: FragmentManager, f: Fragment, context: Context) {
+  override fun onFragmentAttached(fm: FragmentManager, f: Fragment, context: Context) =
     LogUtility.d("Fragment ATTACHED --> " + f.javaClass.simpleName)
-  }
 
-  override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+  override fun onFragmentResumed(fm: FragmentManager, f: Fragment) =
     LogUtility.d("Fragment RESUMED --> " + f.javaClass.simpleName)
-  }
 
-  override fun onFragmentSaveInstanceState(fm: FragmentManager, f: Fragment, outState: Bundle) {
+  override fun onFragmentSaveInstanceState(fm: FragmentManager, f: Fragment, outState: Bundle) =
     LogUtility.d("Fragment SAVED INSTANCE STATE --> " + f.javaClass.simpleName)
-  }
 
   override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
     LogUtility.d("Fragment DESTROYED --> " + f.javaClass.simpleName)
     GoVoteApp.refWatcher.watch(this)
   }
 
-  override fun onFragmentPaused(fm: FragmentManager, f: Fragment) {
+  override fun onFragmentPaused(fm: FragmentManager, f: Fragment) =
     LogUtility.d("Fragment PAUSED --> " + f.javaClass.simpleName)
-  }
 
-  override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
+  override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) =
     LogUtility.d("Fragment VIEW DESTROYED --> " + f.javaClass.simpleName)
-  }
 }

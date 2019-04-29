@@ -2,12 +2,12 @@ package br.com.govote.android.main
 
 import android.graphics.PorterDuff
 import androidx.annotation.DrawableRes
-import br.com.govote.android.libs.ux.UX
+import br.com.govote.android.libs.flows.UiFlow
 import com.google.android.material.tabs.TabLayout
 import javax.inject.Inject
 
 class OnTabChangeBehaviour @Inject constructor(mainActivity: MainActivity) :
-  UX<MainActivity>(mainActivity), TabLayout.OnTabSelectedListener {
+  UiFlow<MainActivity>(mainActivity), TabLayout.OnTabSelectedListener {
 
   private fun setTabIcon(tab: TabLayout.Tab?, @DrawableRes icon: Int) = tab?.setIcon(icon)
 

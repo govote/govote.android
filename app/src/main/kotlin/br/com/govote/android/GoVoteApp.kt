@@ -3,8 +3,10 @@ package br.com.govote.android
 import android.app.Activity
 import android.app.Application
 import android.content.ComponentCallbacks2
-import br.com.govote.android.config.FrescoPipelines
-import br.com.govote.android.config.RemoteConfig
+import br.com.govote.android.infrastructure.config.CrashReporter
+import br.com.govote.android.infrastructure.config.FrescoPipelines
+import br.com.govote.android.infrastructure.config.RemoteConfig
+import br.com.govote.android.libs.callbacks.CurrentActivityLifeCycleCallbacks
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.cache.ImageCacheStatsTracker
 import com.google.firebase.FirebaseApp
@@ -34,6 +36,7 @@ open class GoVoteApp : Application(), HasActivityInjector {
     FrescoPipelines.setup(this, imageCacheStatsTracker)
     FirebaseApp.initializeApp(this)
     RemoteConfig.setup()
+    CrashReporter.setup(this)
 
     registerActivityLifecycleCallbacks(CurrentActivityLifeCycleCallbacks())
 

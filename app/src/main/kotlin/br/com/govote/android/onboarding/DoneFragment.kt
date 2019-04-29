@@ -8,7 +8,7 @@ import br.com.govote.android.R
 
 class DoneFragment : OnboardingFragment() {
 
-  override fun getStep(): Int = 2
+  override fun getStep(): Int = 1
 
   override fun onCreateView(
     inflater: LayoutInflater,
