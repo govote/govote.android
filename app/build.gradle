@@ -12,8 +12,12 @@ android {
   defaultConfig {
     applicationId "br.com.govote.android"
     multiDexEnabled false
+    resConfigs "en", "pt"
+
     testInstrumentationRunner "br.com.govote.android.InstrumentationRunner"
+
     testInstrumentationRunnerArguments clearPackageData: "true"
+    testInstrumentationRunnerArgument "listener", "leakcanary.FailTestOnLeakRunListener"
   }
 
   dexOptions {
@@ -49,7 +53,7 @@ android {
       release {
         keyAlias System.getenv("KEY_ALIAS")
         keyPassword System.getenv("KEY_PASSWORD")
-        storeFile file("$rootDir/app/distribution/releaseView.keystore")
+        storeFile file("$rootDir/app/distribution/release.keystore")
         storePassword System.getenv("KEYSTORE_PASSWORD")
       }
     }
@@ -58,10 +62,13 @@ android {
   buildTypes {
     debug {
       versionNameSuffix ".debug"
-      minifyEnabled false
+      minifyEnabled true
       useProguard false
       debuggable true
       signingConfig signingConfigs.debug
+
+      splits.abi.enable = false
+      splits.density.enable = false
 
       ext.alwaysUpdateBuildId = false
       ext.enableCrashlytics = false
@@ -70,7 +77,7 @@ android {
       testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
 
       resValue 'string', 'app_name', "1." + app_name + ".debug"
-      buildConfigField 'String', 'API_URI',  "\"$env.API_URI\""
+      buildConfigField 'String', 'API_URI', "\"$env.API_URI\""
       buildConfigField 'String', 'GRAPH_API_URI', '"https://graph.facebook.com/v3.2/"'
     }
 
@@ -96,45 +103,31 @@ android {
       buildConfigField 'String', 'API_URI', '"http://bffApi.prod"'
       buildConfigField 'String', 'GRAPH_API_URI', '"https://graph.facebook.com/v3.2/"'
     }
-
-    applicationVariants.all { variant ->
-      if (variant.buildType.name == "debug") {
-        variant.mergedFlavor.resourceConfigurations.clear()
-        variant.mergedFlavor.resourceConfigurations.add("en")
-        variant.mergedFlavor.resourceConfigurations.add("xxhdpi")
-      }
-    }
   }
-
-  testOptions {
-    execution 'ANDROIDX_TEST_ORCHESTRATOR'
-    animationsDisabled true
-    unitTests {
-      includeAndroidResources = true
-      returnDefaultValues = true
-    }
-  }
-
-  useLibrary 'android.test.runner'
-  useLibrary 'android.test.base'
-  useLibrary 'android.test.mock'
 
   applicationVariants.all { variant ->
     if (variant.buildType.name == "release" || BuildUtils.isCI) {
       variant.outputs.each { output ->
-        output.versionNameOverride = file("$rootDir/VERSION").text
-        //output.versionOverride = versionCode = Integer.valueOf(file("$rootDir/VERSION_CODE").readLines()[0].trim())
+        output.setVersionNameOverride(file("$rootDir/VERSION").text)
+        output.setVersionCodeOverride(Integer.valueOf(file("$rootDir/VERSION_CODE").readLines()[0].trim()))
       }
     }
   }
 
   packagingOptions {
     exclude 'kotlin/**'
+    exclude 'LICENSE.txt'
     exclude 'META-INF/*.kotlin_module'
     exclude 'META-INF/*.version'
     exclude 'META-INF/LICENSE.txt'
     exclude 'META-INF/NOTICE.txt'
     exclude 'META-INF/rxjava.properties'
+  }
+
+  bundle {
+    language { enableSplit = false }
+    density { enableSplit = true }
+    abi { enableSplit = true }
   }
 }
 
@@ -142,7 +135,8 @@ dependencies {
   // ---------------------------------------------------------------------------------------------
   // Project Libraries
   // ---------------------------------------------------------------------------------------------
-  implementation project(':android-utils')
+  implementation project(':android_ui')
+  implementation project(':android_utils')
   implementation project(':api')
   implementation project(':analytics')
   implementation project(':data')
@@ -156,9 +150,11 @@ dependencies {
   // Dependencies
   // ---------------------------------------------------------------------------------------------
   implementation Dependencies.constraintLayout
-  implementation(Dependencies.appcompat)
-  implementation(Dependencies.design)
-  implementation(Dependencies.recyclerView)
+  implementation Dependencies.appcompat
+  implementation Dependencies.fragments_ktx
+  implementation Dependencies.design
+  implementation Dependencies.recyclerView
+  implementation Dependencies.archRuntime
   implementation Dependencies.archExtensions
   kapt Dependencies.archCompiler
   implementation Dependencies.navigationFragment
@@ -175,43 +171,41 @@ dependencies {
   kapt Dependencies.daggerCompiler
   implementation Dependencies.okhttp3
   implementation Dependencies.fresco
-  implementation Dependencies.rootBeer
   implementation Dependencies.timber
   implementation Dependencies.facebookLogin
   implementation Dependencies.licensesDialog
+  releaseImplementation Dependencies.rootBeer
 
   // ---------------------------------------------------------------------------------------------
   // Development and Support Libs
   // ---------------------------------------------------------------------------------------------
   implementation(Dependencies.crashlytics) { transitive = true }
-  releaseImplementation Dependencies.leakCanaryNoOp
-  testImplementation Dependencies.leakCanaryNoOp
   debugImplementation Dependencies.leakCanary
-  debugImplementation Dependencies.leakCanaryFragment
   debugImplementation Dependencies.stetho
   debugImplementation Dependencies.stethoOkHttp3
   debugImplementation Dependencies.traceur
   debugImplementation(Dependencies.okhttp3LogInterceptor) { exclude module: 'okhttp' }
   debugImplementation Dependencies.flipper
   debugImplementation Dependencies.soloader
+  androidTestImplementation Dependencies.leakCanaryInstrumentation
 
   // ---------------------------------------------------------------------------------------------
   // Test Libs
   // ---------------------------------------------------------------------------------------------
+  testImplementation TestDependencies.kotlinTest
   testImplementation TestDependencies.junit
   testImplementation TestDependencies.mockito
   testImplementation TestDependencies.hamcrestAll
   testImplementation TestDependencies.requestMatcher
   testImplementation Dependencies.gson
 
+  androidTestUtil TestDependencies.testOrchestrator
+  androidTestImplementation TestDependencies.kotlinTest
   androidTestImplementation TestDependencies.junit
   androidTestImplementation TestDependencies.mockitoAndroid
   androidTestImplementation TestDependencies.testButler
-  androidTestImplementation TestDependencies.junit
-  androidTestImplementation TestDependencies.mockitoAndroid
-  androidTestImplementation "androidx.test:core:${Versions.testCore}"
+  androidTestImplementation TestDependencies.testCore
   androidTestImplementation TestDependencies.supportTestRunner
-  androidTestUtil TestDependencies.testOrchestrator
   androidTestImplementation TestDependencies.testRules
   androidTestImplementation TestDependencies.testEspressoCore
   androidTestImplementation TestDependencies.testEspressoContrib
@@ -219,9 +213,9 @@ dependencies {
   androidTestImplementation TestDependencies.testEspressoWeb
   androidTestImplementation TestDependencies.testButler
   androidTestUtil TestDependencies.testButlerApk
-  androidTestImplementation 'androidx.test.ext:junit:1.1.0'
-  androidTestImplementation 'androidx.test.ext:truth:1.1.0'
-  androidTestImplementation 'com.google.truth:truth:0.42'
+  androidTestImplementation TestDependencies.testAssertionJUnit
+  androidTestImplementation TestDependencies.testAssertionGoogleTruth
+  androidTestImplementation TestDependencies.googleTruth
 }
 
 kapt {

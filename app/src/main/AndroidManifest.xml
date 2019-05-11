@@ -40,7 +40,7 @@
 
     <!-- Main -->
     <activity
-      android:name="br.com.govote.android.main.MainActivity"
+      android:name=".main.MainActivity"
       android:launchMode="singleTask"
       android:screenOrientation="portrait"
       android:theme="@style/AppTheme.Launcher">

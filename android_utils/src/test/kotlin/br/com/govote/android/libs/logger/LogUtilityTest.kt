@@ -2,12 +2,11 @@ package br.com.govote.android.libs.logger
 
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
+import org.junit.runners.JUnit4
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
+@RunWith(JUnit4::class)
 class LogUtilityTest {
+
   @Test
   fun shouldNotFailWhenAnyLogMethodIsCalled() {
     LogUtility.d(NullPointerException("Sample Null Pointer Exception"))

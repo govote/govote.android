@@ -30,8 +30,6 @@ buildscript {
 
 loadEnvs()
 
-ext.java_version = JavaVersion.VERSION_1_8
-
 allprojects {
   repositories {
     google()
@@ -40,13 +38,9 @@ allprojects {
 
   apply plugin: 'jacoco'
 
-  jacoco {
-    toolVersion = Versions.jacoco
-  }
-
   tasks.withType(JavaCompile) {
-    sourceCompatibility = java_version
-    targetCompatibility = java_version
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
     options.encoding = "utf-8"
@@ -99,8 +93,17 @@ subprojects {
         defaultConfig {
           minSdkVersion 21
           targetSdkVersion 28
+
+          /*
+           Modify VERSION_CODE and VERSION_NAME files in project
+           root directory to application versionCode and versionName configuration.
+
+           In release builds, these values will be changed using the values contained
+           in VERSION_CODE and VERSION_NAME files.
+           */
           versionCode 1
           versionName "1.0"
+
           vectorDrawables.useSupportLibrary true
         }
 
@@ -114,9 +117,26 @@ subprojects {
 
         buildTypes { debug { testCoverageEnabled = true } }
 
+        testOptions {
+          execution 'ANDROIDX_TEST_ORCHESTRATOR'
+
+          reportDir "$rootDir/reports/test_reports"
+          resultsDir "$rootDir/reports/test_results"
+
+          animationsDisabled true
+
+          unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+          }
+        }
+
         configurations.all {
-          resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.1'
-          resolutionStrategy.force 'androidx.fragment:fragment:1.1.0-alpha04'
+          resolutionStrategy {
+            force "com.google.code.findbugs:jsr305:${Versions.findbugs_jsr305}"
+            force "androidx.fragment:fragment:${Versions.fragments}"
+            force "com.google.auto.value:auto-value-annotations:${Versions.autoValueAnnotations}"
+          }
         }
       }
     }
@@ -125,9 +145,4 @@ subprojects {
 
 task clean(type: Delete) {
   delete rootProject.buildDir
-}
-
-wrapper {
-  gradleVersion = '5.1.1'
-  distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }

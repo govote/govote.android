@@ -5,6 +5,8 @@ import br.com.concretesolutions.requestmatcher.RequestMatcherRule
 import br.com.govote.android.api.bff.BffApi
 import br.com.govote.android.api.bff.BffApiFactory
 import br.com.govote.android.api.bff.BffConfig
+import br.com.govote.android.api.bff.dtos.LoginRequest
+import br.com.govote.android.api.bff.dtos.LoginResponse
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
@@ -35,11 +37,11 @@ class BffApiTest {
       .addResponse(
         MockResponse().setBody(
           Gson().toJson(
-            OAuthResponse("TOKEN", "REFRESH", "STATE", ArrayList(), "TOKEN_TYPE", 10000))))
+            LoginResponse("id"))))
       .ifRequestMatches()
 
     val response = bffApi!!
-      .getToken("client_id", "state", "grant_type", "username", "password")
+      .authenticate(LoginRequest("facebook_id", "facebook_access_token"))
       .blockingFirst()
 
     assertNotNull(response)
@@ -49,6 +51,7 @@ class BffApiTest {
   private fun initServices() {
     val rootUrl = serverRule.url("/").toString()
     val folder = File.createTempFile("tmp", ".tmp")
-    bffApi = BffApiFactory.build(OkHttpClient.Builder(), Gson(), BffConfig(rootUrl, folder, "cache", 1024))
+    bffApi =
+      BffApiFactory.build(OkHttpClient.Builder(), Gson(), BffConfig(rootUrl, folder, "cache", 1024))
   }
 }

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import br.com.govote.android.GoVoteApp
 import br.com.govote.android.libs.logger.LogUtility
 
 class FragmentDebugLifecycleTracker : FragmentManager.FragmentLifecycleCallbacks() {
@@ -29,10 +28,8 @@ class FragmentDebugLifecycleTracker : FragmentManager.FragmentLifecycleCallbacks
   override fun onFragmentSaveInstanceState(fm: FragmentManager, f: Fragment, outState: Bundle) =
     LogUtility.d("Fragment SAVED INSTANCE STATE --> " + f.javaClass.simpleName)
 
-  override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
+  override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) =
     LogUtility.d("Fragment DESTROYED --> " + f.javaClass.simpleName)
-    GoVoteApp.refWatcher.watch(this)
-  }
 
   override fun onFragmentPaused(fm: FragmentManager, f: Fragment) =
     LogUtility.d("Fragment PAUSED --> " + f.javaClass.simpleName)

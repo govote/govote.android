@@ -10,20 +10,13 @@ import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin
 import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin
-import com.facebook.flipper.plugins.leakcanary.RecordLeakService
 import com.facebook.soloader.SoLoader
 import com.facebook.stetho.Stetho
-import com.squareup.leakcanary.LeakCanary
-import com.squareup.leakcanary.RefWatcher
 import com.tspoon.traceur.Traceur
 import timber.log.Timber
 
 class DebugGoVoteApp : GoVoteApp() {
   override fun onCreate() {
-    if (LeakCanary.isInAnalyzerProcess(this)) {
-      return
-    }
-
     super.onCreate()
 
     SoLoader.init(this, false)
@@ -50,7 +43,6 @@ class DebugGoVoteApp : GoVoteApp() {
     Traceur.enableLogging()
     Timber.plant(Timber.DebugTree())
 
-    // strict mode should be enabled at to end to avoid errors caused by certain libraries initialization
     enableStrictMode()
   }
 
@@ -58,11 +50,6 @@ class DebugGoVoteApp : GoVoteApp() {
     super.onTrimMemory(level)
     LogUtility.d("[ onTrimMemory ] $level")
   }
-
-  override fun enableLeakCanary(): RefWatcher =
-    LeakCanary.refWatcher(this)
-      .listenerServiceClass(RecordLeakService::class.java)
-      .buildAndInstall()
 
   private fun enableStrictMode() {
     StrictMode.setThreadPolicy(

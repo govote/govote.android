@@ -10,7 +10,6 @@ import br.com.govote.android.libs.callbacks.CurrentActivityLifeCycleCallbacks
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.cache.ImageCacheStatsTracker
 import com.google.firebase.FirebaseApp
-import com.squareup.leakcanary.RefWatcher
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -23,7 +22,6 @@ open class GoVoteApp : Application(), HasActivityInjector {
     const val DATABASE = "br.com.govote.android.database"
 
     lateinit var instance: GoVoteApp private set
-    lateinit var refWatcher: RefWatcher private set
   }
 
   @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
@@ -40,7 +38,6 @@ open class GoVoteApp : Application(), HasActivityInjector {
 
     registerActivityLifecycleCallbacks(CurrentActivityLifeCycleCallbacks())
 
-    refWatcher = enableLeakCanary()
     instance = this
   }
 
@@ -67,6 +64,4 @@ open class GoVoteApp : Application(), HasActivityInjector {
       .application(this)
       .build()
       .inject(this)
-
-  protected open fun enableLeakCanary(): RefWatcher = RefWatcher.DISABLED
 }

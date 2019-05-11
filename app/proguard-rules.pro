@@ -1,5 +1,7 @@
 -optimizations !method/removal/parameter
 -optimizationpasses 2
+-printusage ../reports/optimize-usage-report.txt
+
 
 -dontwarn android.databinding.**
 -keep class android.databinding.** { *; }

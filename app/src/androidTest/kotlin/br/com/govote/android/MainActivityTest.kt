@@ -11,7 +11,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
-class MainAnalyticsTest {
+class MainActivityTest {
   @get:Rule
   val activityTestRule: ActivityTestRule<MainActivity> = ActivityTestRule(
     MainActivity::class.java
