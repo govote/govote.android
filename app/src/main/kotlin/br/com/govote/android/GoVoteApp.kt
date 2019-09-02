@@ -1,21 +1,23 @@
 package br.com.govote.android
 
-import android.app.Activity
 import android.app.Application
 import android.content.ComponentCallbacks2
 import br.com.govote.android.infrastructure.config.CrashReporter
 import br.com.govote.android.infrastructure.config.FrescoPipelines
 import br.com.govote.android.infrastructure.config.RemoteConfig
+import br.com.govote.android.infrastructure.di.appComponents
 import br.com.govote.android.libs.callbacks.CurrentActivityLifeCycleCallbacks
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.cache.ImageCacheStatsTracker
 import com.google.firebase.FirebaseApp
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
-import javax.inject.Inject
+import org.koin.android.ext.android.get
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
+import org.koin.core.qualifier.named
 
-open class GoVoteApp : Application(), HasActivityInjector {
+open class GoVoteApp : Application() {
 
   companion object {
     const val SHARED_PREFERENCES = "br.com.govote.android.shared_prefs"
@@ -24,13 +26,17 @@ open class GoVoteApp : Application(), HasActivityInjector {
     lateinit var instance: GoVoteApp private set
   }
 
-  @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
-  @Inject lateinit var imageCacheStatsTracker: ImageCacheStatsTracker
-
   override fun onCreate() {
     super.onCreate()
 
-    setupDagger()
+    startKoin {
+      androidContext(this@GoVoteApp)
+      androidLogger(Level.DEBUG)
+      modules(appComponents)
+    }
+
+    val imageCacheStatsTracker: ImageCacheStatsTracker = get(named("frescoDebug"))
+
     FrescoPipelines.setup(this, imageCacheStatsTracker)
     FirebaseApp.initializeApp(this)
     RemoteConfig.setup()
@@ -55,13 +61,4 @@ open class GoVoteApp : Application(), HasActivityInjector {
         if (Fresco.hasBeenInitialized()) Fresco.getImagePipeline().clearMemoryCaches()
     }
   }
-
-  override fun activityInjector(): AndroidInjector<Activity>? = dispatchingAndroidInjector
-
-  private fun setupDagger() =
-    DaggerAppComponent
-      .builder()
-      .application(this)
-      .build()
-      .inject(this)
 }

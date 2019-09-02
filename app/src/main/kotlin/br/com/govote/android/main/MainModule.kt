@@ -1,14 +1,9 @@
 package br.com.govote.android.main
 
-import dagger.Module
-import dagger.Provides
+import org.koin.dsl.module
 
-@Module
-internal class MainModule {
-
-  @Provides
-  fun provideDoubleBackExitBehaviour(activity: MainActivity) = DoubleBackClickToExitBehaviour(activity)
-
-  @Provides
-  fun provideMainView(mainActivity: MainActivity): MainView = mainActivity
+val mainModule = module {
+  factory { (activity: MainActivity) -> DoubleBackClickToExitBehaviour(activity) }
+  factory { (view: MainView) -> MainPresenter(view, get(), get()) }
+  factory { (activity: MainActivity) -> OnTabChangeBehaviour(activity) }
 }

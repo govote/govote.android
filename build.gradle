@@ -14,7 +14,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.4.0'
+    classpath 'com.android.tools.build:gradle:3.4.2'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     classpath "org.jacoco:org.jacoco.core:${Versions.jacoco}"
     classpath "com.google.gms:google-services:${Versions.google_services}"
@@ -137,6 +137,13 @@ subprojects {
             force "androidx.fragment:fragment:${Versions.fragments}"
             force "com.google.auto.value:auto-value-annotations:${Versions.autoValueAnnotations}"
           }
+        }
+      }
+
+      if (hasKapt(project)) {
+        kapt {
+          useBuildCache = true
+          mapDiagnosticLocations = true
         }
       }
     }

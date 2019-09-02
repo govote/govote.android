@@ -5,12 +5,12 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 
-abstract class UiFlow<A : LifecycleOwner> constructor(private var screen: A?) : LifecycleObserver {
+abstract class UiFlow<T : LifecycleOwner> constructor(private var screen: T?) : LifecycleObserver {
 
-  protected fun getContext(): A = screen!!
+  protected fun getUiContext(): T = screen!!
 
   @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-  fun clearContext() {
+  fun clearUiContext() {
     screen = null
   }
 }

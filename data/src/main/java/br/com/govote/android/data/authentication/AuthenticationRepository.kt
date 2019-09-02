@@ -7,10 +7,11 @@ import br.com.govote.android.api.bff.dtos.LoginRequest
 import br.com.govote.android.api.graphapi.GraphApi
 import br.com.govote.android.api.graphapi.utils.FbConsts.Companion.FACEBOOK_USER_FIELDS
 import br.com.govote.android.api.graphapi.utils.FbUtils
+import com.squareup.sqldelight.android.AndroidSqliteDriver
+import com.squareup.sqldelight.db.SqlDriver
 import io.reactivex.Observable
-import javax.inject.Inject
 
-class AuthenticationRepository @Inject constructor(
+class AuthenticationRepository constructor(
   private val graphApi: GraphApi,
   private val bffApi: BffApi,
   private val sharedPreferences: SharedPreferences

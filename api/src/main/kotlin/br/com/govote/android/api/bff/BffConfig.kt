@@ -5,6 +5,5 @@ import java.io.File
 data class BffConfig(
   internal val uri: String,
   internal val cacheDir: File,
-  internal val cacheName: String,
-  internal val cacheSize: Int
+  internal val cacheName: String
 )

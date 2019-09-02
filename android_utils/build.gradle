@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
 
 dependencies {
   // ---------------------------------------------------------------------------------------------
@@ -31,8 +30,7 @@ dependencies {
   implementation Dependencies.rxAndroid
   implementation Dependencies.rxJava
   implementation Dependencies.timber
-  implementation Dependencies.dagger
-  implementation Dependencies.daggerSupport
+  implementation Dependencies.koinViewModel
 
   // ---------------------------------------------------------------------------------------------
   // Test Libs

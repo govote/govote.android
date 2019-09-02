@@ -5,11 +5,11 @@ apply plugin: 'kotlin-kapt'
 dependencies {
   implementation project(':api')
 
+  implementation Dependencies.annotations
   implementation Dependencies.kotlinStandardLib
-  implementation Dependencies.dagger
-  implementation Dependencies.daggerSupport
-  kapt Dependencies.daggerProcessor
-  kapt Dependencies.daggerCompiler
+  implementation Dependencies.koinViewModel
   implementation Dependencies.rxAndroid
   implementation Dependencies.rxJava
+  implementation Dependencies.room
+  kapt Dependencies.roomCompiler
 }

@@ -1,12 +1,10 @@
 package br.com.govote.android.onboarding
 
-import dagger.Module
-import dagger.Provides
+import org.koin.dsl.module
 
-@Module
-class OnboardingModule {
-
-  @Provides
-  fun provideOnboardingNavigation(onboardingActivity: OnboardingActivity): OnboardingNavigator =
-    OnboardingNavigator(onboardingActivity)
+val onboardingModule = module {
+  factory { (activity: OnboardingActivity) -> provideOnboardingNavigation(activity) }
 }
+
+fun provideOnboardingNavigation(onboardingActivity: OnboardingActivity): OnboardingNavigator =
+  OnboardingNavigator(onboardingActivity)

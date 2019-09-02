@@ -42,7 +42,7 @@ public class SwipeCardListener implements View.OnTouchListener {
   private final int mBottomLimit;
   private final int mLeftRightMarginLimit;
 
-  SwipeCardListener(View frame, Object itemAtPosition, float rotationDegrees, SwipeActionsListener swipeActionsListener) {
+  SwipeCardListener(final View frame, final Object itemAtPosition, final float rotationDegrees, final SwipeActionsListener swipeActionsListener) {
     super();
 
     mFrame = frame;
@@ -61,7 +61,7 @@ public class SwipeCardListener implements View.OnTouchListener {
   }
 
   @Override
-  public boolean onTouch(View view, MotionEvent event) {
+  public boolean onTouch(final View view, final MotionEvent event) {
     switch (event.getAction() & MotionEvent.ACTION_MASK) {
       case MotionEvent.ACTION_DOWN:
         mSwipeActionsListener.onTouchDown();
@@ -72,7 +72,6 @@ public class SwipeCardListener implements View.OnTouchListener {
         mActivePointerId = event.getPointerId(0);
 
         if (mFrame.getY() > 300) {
-
           break;
         }
 
@@ -121,8 +120,8 @@ public class SwipeCardListener implements View.OnTouchListener {
         break;
 
       case MotionEvent.ACTION_UP:
-        float endX = event.getX();
-        float endY = event.getY();
+        final float endX = event.getX();
+        final float endY = event.getY();
 
         if ((!(mADownTouchY >= mObjectH - mBottomLimit || mADownTouchX <= mLeftRightMarginLimit || mADownTouchX >= mObjectW - mLeftRightMarginLimit))
           && isClick(mADownTouchX, endX, mADownTouchY, endY) && event.getAction() != MotionEvent.ACTION_MOVE) {
@@ -164,8 +163,8 @@ public class SwipeCardListener implements View.OnTouchListener {
           break;
         }
 
-        float ex = event.getX();
-        float ey = event.getY();
+        final float ex = event.getX();
+        final float ey = event.getY();
 
         if (isClick(mADownTouchX, ex, mADownTouchY, ey)) {
           break;
@@ -186,7 +185,7 @@ public class SwipeCardListener implements View.OnTouchListener {
         mAPosY += dy;
 
         // calculate the rotation degrees
-        float distToObjectX = mAPosX - mObjectX;
+        final float distToObjectX = mAPosX - mObjectX;
         float rotation = mBaseRotationDegrees * 2.f * distToObjectX / mParentWidth;
         if (mTouchPosition == TOUCH_BELOW) {
           rotation = -rotation;
@@ -209,9 +208,9 @@ public class SwipeCardListener implements View.OnTouchListener {
     return true;
   }
 
-  private boolean isClick(float startX, float endX, float startY, float endY) {
-    float differenceX = Math.abs(startX - endX);
-    float differenceY = Math.abs(startY - endY);
+  private boolean isClick(final float startX, final float endX, final float startY, final float endY) {
+    final float differenceX = Math.abs(startX - endX);
+    final float differenceY = Math.abs(startY - endY);
 
     return differenceX == 0 && differenceY == 0;
   }
@@ -269,36 +268,28 @@ public class SwipeCardListener implements View.OnTouchListener {
   }
 
   private void onSelected(final boolean isLeft,
-                          float exitY) {
+                          final float exitY) {
     mIsAnimationRunning = true;
 
-    float exitX;
-
-    if (isLeft) {
-      exitX = -mObjectW - getRotationWidthOffset();
-    } else {
-      exitX = mParentWidth + getRotationWidthOffset();
-    }
+    final float exitX = isLeft
+      ? -mObjectW - getRotationWidthOffset()
+      : mParentWidth + getRotationWidthOffset();
 
     animate((long) 100, isLeft, exitX, exitY);
   }
 
   private void onSelectedByClick(final boolean isLeft,
-                                 float exitY) {
+                                 final float exitY) {
     mIsAnimationRunning = true;
 
-    float exitX;
-
     if (isLeft) {
-      exitX = -mObjectW - getRotationWidthOffset();
-      mSwipeActionsListener.onBeforeLeftCardExit(() -> SwipeCardListener.this.animate((long) 200, true, exitX, exitY));
+      mSwipeActionsListener.onBeforeLeftCardExit(() -> SwipeCardListener.this.animate((long) 200, true, -mObjectW - getRotationWidthOffset(), exitY));
     } else {
-      exitX = mParentWidth + getRotationWidthOffset();
-      mSwipeActionsListener.onBeforeRightCardExit(() -> SwipeCardListener.this.animate((long) 200, false, exitX, exitY));
+      mSwipeActionsListener.onBeforeRightCardExit(() -> SwipeCardListener.this.animate((long) 200, false, mParentWidth + getRotationWidthOffset(), exitY));
     }
   }
 
-  private void animate(long duration, boolean isLeft, float exitX, float exitY) {
+  private void animate(final long duration, final boolean isLeft, final float exitX, final float exitY) {
     this.mFrame.animate()
       .setDuration(duration)
       .setInterpolator(new AccelerateInterpolator())
@@ -341,12 +332,12 @@ public class SwipeCardListener implements View.OnTouchListener {
     }
   }
 
-  private float getExitPoint(int exitXPoint) {
-    float[] x = new float[2];
+  private float getExitPoint(final int exitXPoint) {
+    final float[] x = new float[2];
     x[0] = mObjectX;
     x[1] = mAPosX;
 
-    float[] y = new float[2];
+    final float[] y = new float[2];
     y[0] = mObjectY;
     y[1] = mAPosY;
 
@@ -356,7 +347,7 @@ public class SwipeCardListener implements View.OnTouchListener {
     return (float) regression.slope() * exitXPoint + (float) regression.intercept();
   }
 
-  private float getExitRotation(boolean isLeft) {
+  private float getExitRotation(final boolean isLeft) {
     float rotation = mBaseRotationDegrees * 2.f * (mParentWidth - mObjectX) / mParentWidth;
     if (mTouchPosition == TOUCH_BELOW) {
       rotation = -rotation;

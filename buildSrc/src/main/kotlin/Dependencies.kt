@@ -1,6 +1,7 @@
 object Dependencies {
   const val kotlinStandardLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
   const val ktx = "androidx.core:core-ktx:${Versions.ktx}"
+  const val annotations = "androidx.annotation:annotation:${Versions.androidx}"
 
   const val design = "com.google.android.material:material:${Versions.design}"
   const val recyclerView = "androidx.recyclerview:recyclerview:${Versions.androidx}"
@@ -39,15 +40,16 @@ object Dependencies {
   const val stethoOkHttp3 = "com.facebook.stetho:stetho-okhttp3:${Versions.stetho}"
   const val traceur = "com.tspoon.traceur:traceur:${Versions.traceur}"
   const val okhttp3LogInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
-  const val flipper = "com.facebook.flipper:flipper:${Versions.flipper}"
-  const val soloader = "com.facebook.soloader:soloader:${Versions.soloader}"
 
   const val archRuntime = "androidx.lifecycle:lifecycle-runtime:${Versions.arch}"
   const val archExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.arch}"
   const val archCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.arch}"
+  const val archViewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.arch}"
 
-  const val dagger = "com.google.dagger:dagger-android:${Versions.dagger}"
-  const val daggerSupport = "com.google.dagger:dagger-android-support:${Versions.dagger}"
-  const val daggerProcessor = "com.google.dagger:dagger-android-processor:${Versions.dagger}"
-  const val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
+  const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
+  const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
+  const val roomRxJava = "androidx.room:room-rxjava2:${Versions.room}"
+  val room = arrayOf(roomRuntime, roomRxJava)
+
+  const val koinViewModel = "org.koin:koin-androidx-viewmodel:${Versions.koin}"
 }

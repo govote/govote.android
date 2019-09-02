@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import br.com.govote.android.BuildConfig.APPLICATION_ID
 import br.com.govote.android.R
 import br.com.govote.android.libs.delegates.viewIdentifiedBy
 import br.com.govote.android.libs.mvp.PresenterActivity
@@ -14,20 +15,25 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 
 class LoginActivity : PresenterActivity<LoginView, LoginPresenter>(), LoginView,
-  FacebookCallback<LoginResult> {
+                      FacebookCallback<LoginResult> {
 
-  private val facebookPermissions = listOf("public_profile", "email", "user_photos", "user_birthday")
+  override val viewPresenter: LoginPresenter by inject { parametersOf(this@LoginActivity) }
 
-  @Inject lateinit var callbackManager: CallbackManager
+  private val facebookPermissions =
+    listOf("public_profile", "email", "user_photos", "user_birthday")
 
+  private val callbackManager: CallbackManager by inject()
   private val facebookLogin: Button by viewIdentifiedBy(R.id.facebookLogin)
 
   companion object {
-    private const val EXTRA_ERROR_MESSAGE = "br.com.govote.authentication.LoginActivity.ERROR_MESSAGE"
-    private const val EXTRA_IS_NEW_TASK = "br.com.govote.authentication.LoginActivity.NEW_TASK"
+    private const val EXTRA_ERROR_MESSAGE =
+      "$APPLICATION_ID.authentication.LoginActivity.ERROR_MESSAGE"
+    private const val EXTRA_IS_NEW_TASK =
+      "$APPLICATION_ID.authentication.LoginActivity.NEW_TASK"
 
     fun newClearIntent(context: Context): Intent =
       with(Intent(context, LoginActivity::class.java)) {

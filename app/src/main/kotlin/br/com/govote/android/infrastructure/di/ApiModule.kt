@@ -7,33 +7,27 @@ import br.com.govote.android.api.bff.BffConfig
 import br.com.govote.android.api.graphapi.GraphApi
 import br.com.govote.android.api.graphapi.GraphApiConfig
 import br.com.govote.android.api.graphapi.GraphApiFactory
-import com.google.gson.Gson
-import dagger.Module
-import dagger.Provides
 import okhttp3.OkHttpClient
+import org.koin.dsl.module
 import java.io.File
-import javax.inject.Singleton
 
-@Module
-class ApiModule {
+val apiModule = module {
+  single { bffApi(get()) }
+  single { graphApi(get()) }
+}
 
-  @Provides
-  @Singleton
-  fun provideApi(okBuilder: OkHttpClient.Builder, gson: Gson): BffApi {
-    val uri = BuildConfig.API_URI
-    val cache = "br.com.govote.android.network.cache"
-    val config = BffConfig(uri, File(cache), cache, 50 * 1024 * 1024)
+private fun bffApi(okBuilder: OkHttpClient.Builder): BffApi {
+  val uri = BuildConfig.API_URI
+  val cache = "br.com.govote.android.network.cache"
+  val config = BffConfig(uri, File(cache), cache)
 
-    return BffApiFactory.build(okBuilder, gson, config)
-  }
+  return BffApiFactory.build(okBuilder, config)
+}
 
-  @Provides
-  @Singleton
-  fun provideGraphApi(okBuilder: OkHttpClient.Builder): GraphApi {
-    val uri = BuildConfig.GRAPH_API_URI
-    val cache = "br.com.govote.android.network.graphapi_cache"
-    val config = GraphApiConfig(uri, cache, 50 * 1024 * 1024)
+fun graphApi(okBuilder: OkHttpClient.Builder): GraphApi {
+  val uri = BuildConfig.GRAPH_API_URI
+  val cache = "br.com.govote.android.network.graphapi_cache"
+  val config = GraphApiConfig(uri, cache, 50 * 1024 * 1024)
 
-    return GraphApiFactory.get(config, okBuilder)
-  }
+  return GraphApiFactory.get(config, okBuilder)
 }

@@ -4,12 +4,12 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 final class SizerUtils {
-	static int dpToPx(Context context, int dp) {
-		return Math.round(dp * getPixelScaleFactor(context));
-	}
+  static int dpToPx(final Context context, final int dp) {
+    return Math.round(dp * getPixelScaleFactor(context));
+  }
 
-	private static float getPixelScaleFactor(Context context) {
-		DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-		return (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT);
-	}
+  private static float getPixelScaleFactor(final Context context) {
+    final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+    return (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT);
+  }
 }

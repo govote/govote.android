@@ -10,6 +10,12 @@ static def isAndroidModule(project) {
   }
 }
 
+static def hasKapt(project) {
+  return project.plugins.find {
+    it.class.name == "org.jetbrains.kotlin.kapt"
+  }
+}
+
 static def setPreDex(project) {
   project.plugins.whenPluginAdded { plugin ->
     if ("com.android.build.gradle.AppPlugin" == plugin.class.name) {
@@ -78,4 +84,5 @@ task listLayoutIDs {
 }
 
 ext.isAndroidModule = this.&isAndroidModule
+ext.hasKapt = this.&hasKapt
 ext.setPreDex = this.&setPreDex

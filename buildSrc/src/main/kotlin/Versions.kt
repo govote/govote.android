@@ -36,11 +36,10 @@ object Versions {
   const val fresco = "1.13.0"
   const val rxAndroid = "2.0.2"
   const val rxJava = "2.1.16"
-  const val sqlbrite = "3.1.0"
   const val licensesDialog = "1.8.3"
   const val crashlytics = "2.9.5"
   const val traceur = "1.0.1"
-  const val dagger = "2.16"
+  const val koin = "2.0.0-GA"
   const val fabric = "1.28.1"
   const val rootbeer = "0.0.7"
   const val google_services = "4.2.0"
@@ -51,6 +50,7 @@ object Versions {
 
   // architecture components
   const val arch = "2.1.0-alpha04"
+  const val room = "2.1.0-beta01"
 
   // utils
   const val leakCanary = "2.0-alpha-1"
@@ -60,7 +60,5 @@ object Versions {
   const val ktlint = "0.24.0"
   const val detekt = "1.0.0.RC7"
   const val spotless = "3.14.0"
-  const val flipper = "0.15.0"
-  const val soloader = "0.5.1"
   const val findbugs_jsr305 = "3.0.1"
 }

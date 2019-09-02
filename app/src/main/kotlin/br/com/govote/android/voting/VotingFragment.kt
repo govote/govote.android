@@ -13,5 +13,5 @@ class VotingFragment : Fragment() {
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? = inflater.inflate(R.layout.onboarding_welcome, container, false)
+  ): View? = inflater.inflate(R.layout.voting, container, false)
 }

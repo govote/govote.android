@@ -6,9 +6,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import br.com.govote.android.R
-import javax.inject.Inject
 
-class DoubleBackClickToExitBehaviour @Inject constructor(private var activity: MainActivity?) :
+class DoubleBackClickToExitBehaviour constructor(private var activity: MainActivity?) :
   LifecycleObserver {
 
   private var doubleBackToExitPressedOnce = false

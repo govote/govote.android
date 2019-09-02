@@ -1,11 +1,7 @@
 package br.com.govote.android.auth
 
-import dagger.Module
-import dagger.Provides
+import org.koin.dsl.module
 
-@Module
-class AuthenticationModule {
-
-  @Provides
-  fun provideLoginView(loginActivity: LoginActivity): LoginView = loginActivity
+val authModule = module {
+  factory { (view: LoginView) -> LoginPresenter(view, get()) }
 }

@@ -7,23 +7,18 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import br.com.govote.android.R
 import br.com.govote.android.libs.delegates.viewIdentifiedBy
 import br.com.govote.android.libs.utils.PagerUtils.createPager
 import br.com.govote.android.libs.utils.PagerUtils.markPage
-import dagger.android.AndroidInjection
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 
-class OnboardingActivity : AppCompatActivity(), HasSupportFragmentInjector {
+class OnboardingActivity : AppCompatActivity() {
 
-  @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-  @Inject lateinit var onboardingNavigator: OnboardingNavigator
+  private val onboardingNavigator: OnboardingNavigator by inject { parametersOf(this@OnboardingActivity) }
 
   private val next: TextView by viewIdentifiedBy(R.id.next)
   private val skip: TextView by viewIdentifiedBy(R.id.skip)
@@ -45,7 +40,6 @@ class OnboardingActivity : AppCompatActivity(), HasSupportFragmentInjector {
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    AndroidInjection.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.onboarding)
 
@@ -55,8 +49,6 @@ class OnboardingActivity : AppCompatActivity(), HasSupportFragmentInjector {
     setupNextAction()
     navController.navigate(R.id.welcome)
   }
-
-  override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidInjector
 
   internal fun changeStep(step: Int) =
     markPage(this, step, pagination, pageSelected, pageUnselected)

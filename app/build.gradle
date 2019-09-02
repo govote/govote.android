@@ -4,8 +4,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
-apply from: "$rootDir/tools/coverage.gradle"
-
 final app_name = 'GoVote'
 
 android {
@@ -62,7 +60,7 @@ android {
   buildTypes {
     debug {
       versionNameSuffix ".debug"
-      minifyEnabled true
+      minifyEnabled false
       useProguard false
       debuggable true
       signingConfig signingConfigs.debug
@@ -154,8 +152,7 @@ dependencies {
   implementation Dependencies.fragments_ktx
   implementation Dependencies.design
   implementation Dependencies.recyclerView
-  implementation Dependencies.archRuntime
-  implementation Dependencies.archExtensions
+  implementation Dependencies.archViewModel
   kapt Dependencies.archCompiler
   implementation Dependencies.navigationFragment
   implementation Dependencies.navigationUI
@@ -165,10 +162,7 @@ dependencies {
   implementation Dependencies.gson
   implementation Dependencies.rxAndroid
   implementation Dependencies.rxJava
-  implementation Dependencies.dagger
-  implementation Dependencies.daggerSupport
-  kapt Dependencies.daggerProcessor
-  kapt Dependencies.daggerCompiler
+  implementation Dependencies.koinViewModel
   implementation Dependencies.okhttp3
   implementation Dependencies.fresco
   implementation Dependencies.timber
@@ -185,8 +179,6 @@ dependencies {
   debugImplementation Dependencies.stethoOkHttp3
   debugImplementation Dependencies.traceur
   debugImplementation(Dependencies.okhttp3LogInterceptor) { exclude module: 'okhttp' }
-  debugImplementation Dependencies.flipper
-  debugImplementation Dependencies.soloader
   androidTestImplementation Dependencies.leakCanaryInstrumentation
 
   // ---------------------------------------------------------------------------------------------
@@ -216,11 +208,6 @@ dependencies {
   androidTestImplementation TestDependencies.testAssertionJUnit
   androidTestImplementation TestDependencies.testAssertionGoogleTruth
   androidTestImplementation TestDependencies.googleTruth
-}
-
-kapt {
-  useBuildCache = true
-  mapDiagnosticLocations = true
 }
 
 apply plugin: 'com.google.gms.google-services'

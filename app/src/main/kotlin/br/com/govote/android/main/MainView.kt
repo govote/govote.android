@@ -8,5 +8,5 @@ interface MainView : PresenterView {
 
   fun onAuthenticated()
 
-  fun showOnboard()
+  fun showOnboarding()
 }

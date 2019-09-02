@@ -5,9 +5,8 @@ import br.com.govote.android.data.authentication.LoginArgs
 import br.com.govote.android.libs.mvp.BaseViewPresenter
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
 
-class LoginPresenter @Inject constructor(
+class LoginPresenter constructor(
   loginView: LoginView,
   private val authenticationRepository: AuthenticationRepository
 ) : BaseViewPresenter<LoginView>(loginView) {

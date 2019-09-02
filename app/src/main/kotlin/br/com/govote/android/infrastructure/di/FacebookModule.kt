@@ -1,14 +1,8 @@
 package br.com.govote.android.infrastructure.di
 
 import com.facebook.CallbackManager
-import dagger.Module
-import dagger.Provides
+import org.koin.dsl.module
 
-@Module
-class FacebookModule {
-
-  @Provides
-  fun provideCallbackManager(): CallbackManager {
-    return CallbackManager.Factory.create()
-  }
+val facebookModule = module {
+  single { CallbackManager.Factory.create() }
 }

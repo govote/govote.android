@@ -14,289 +14,287 @@ import android.widget.FrameLayout;
 
 @SuppressWarnings("unchecked")
 public class SwipeCardAdapterView extends AdapterView {
-	private int mMaxVisible = 2;
-	private int mMinAdapterStack = 6;
-	private float mRotationDegrees = 15.f;
+  private int maxVisible = 2;
+  private int minAdapterStack = 6;
+  private float rotationDegrees = 15.f;
 
-	private Adapter mAdapter;
-	private int mFirstObjectInStack = 0;
-	private SwipeListener mOnSwipeListener;
-	private AdapterDataSetObserver mDataSetObserver;
-	private boolean mInLayout = false;
-	private View mActiveCard = null;
-	private SwipeCardListener mFlingCardListener;
-	private PointF mLastTouchPoint;
+  private Adapter adapter;
+  private int firstObjectInStack = 0;
+  private SwipeListener swipeListener;
+  private AdapterDataSetObserver dataSetObserver;
+  private boolean inLayout = false;
+  private View activeCard = null;
+  private SwipeCardListener flingCardListener;
+  private PointF lastTouchPoint;
 
-	private int mHeightMeasureSpec;
-	private int mWidthMeasureSpec;
+  private int heightMeasureSpec;
+  private int widthMeasureSpec;
 
-	public SwipeCardAdapterView(Context context, AttributeSet attrs) {
-		this(context, attrs, attrs.getStyleAttribute());
-	}
+  public SwipeCardAdapterView(final Context context, final AttributeSet attrs) {
+    this(context, attrs, attrs.getStyleAttribute());
+  }
 
-	public SwipeCardAdapterView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+  public SwipeCardAdapterView(final Context context, final AttributeSet attrs, final int defStyle) {
+    super(context, attrs, defStyle);
 
-		TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.SwipeCardAdapterView, defStyle, 0);
+    final TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.SwipeCardAdapterView, defStyle, 0);
 
-		mMaxVisible = attributes.getInt(R.styleable.SwipeCardAdapterView_max_visible, mMaxVisible);
-		mMinAdapterStack = attributes.getInt(R.styleable.SwipeCardAdapterView_min_adapter_stack, mMinAdapterStack);
-		mRotationDegrees = attributes.getFloat(R.styleable.SwipeCardAdapterView_rotation_degrees, mRotationDegrees);
+    maxVisible = attributes.getInt(R.styleable.SwipeCardAdapterView_max_visible, maxVisible);
+    minAdapterStack = attributes.getInt(R.styleable.SwipeCardAdapterView_min_adapter_stack, minAdapterStack);
+    rotationDegrees = attributes.getFloat(R.styleable.SwipeCardAdapterView_rotation_degrees, rotationDegrees);
 
-		attributes.recycle();
-	}
+    attributes.recycle();
+  }
 
-	@Override
-	public View getSelectedView() {
-		return mActiveCard;
-	}
+  @Override
+  public View getSelectedView() {
+    return activeCard;
+  }
 
-	@Override
-	public void requestLayout() {
-		if (!mInLayout) {
-			super.requestLayout();
-		}
-	}
+  @Override
+  public void requestLayout() {
+    if (!inLayout) {
+      super.requestLayout();
+    }
+  }
 
-	@Override
-	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		super.onLayout(changed, left, top, right, bottom);
+  @Override
+  protected void onLayout(final boolean changed, final int left, final int top, final int right, final int bottom) {
+    super.onLayout(changed, left, top, right, bottom);
 
-		if (mAdapter == null) {
-			return;
-		}
+    if (adapter == null) {
+      return;
+    }
 
-		mInLayout = true;
-		final int adapterCount = mAdapter.getCount();
+    inLayout = true;
+    final int adapterCount = adapter.getCount();
 
-		if (adapterCount == 0) {
-			removeAllViewsInLayout();
-		} else {
-			View topCard = getChildAt(mFirstObjectInStack);
-			if (mActiveCard != null && topCard != null && topCard == mActiveCard) {
-				if (mFlingCardListener.isTouching()) {
-					PointF lastPoint = mFlingCardListener.getLastPoint();
-					if (mLastTouchPoint == null || !mLastTouchPoint.equals(lastPoint)) {
-						mLastTouchPoint = lastPoint;
-						removeViewsInLayout(0, mFirstObjectInStack);
-						layoutChildren(1, adapterCount);
-					}
-				}
-			} else {
-				// Reset the UI and set top view listener
-				removeAllViewsInLayout();
-				layoutChildren(0, adapterCount);
-				setTopView();
-			}
-		}
+    if (adapterCount == 0) {
+      removeAllViewsInLayout();
+    } else {
+      final View topCard = getChildAt(firstObjectInStack);
+      if (activeCard != null && topCard != null && topCard == activeCard) {
+        if (flingCardListener.isTouching()) {
+          final PointF lastPoint = flingCardListener.getLastPoint();
+          if (lastTouchPoint == null || !lastTouchPoint.equals(lastPoint)) {
+            lastTouchPoint = lastPoint;
+            removeViewsInLayout(0, firstObjectInStack);
+            layoutChildren(1, adapterCount);
+          }
+        }
+      } else {
+        // Reset the UI and set top view listener
+        removeAllViewsInLayout();
+        layoutChildren(0, adapterCount);
+        setTopView();
+      }
+    }
 
-		mInLayout = false;
+    inLayout = false;
 
-		if (adapterCount <= mMinAdapterStack) {
-			mOnSwipeListener.onAdapterAboutToEmpty(adapterCount);
-		}
-	}
+    if (adapterCount <= minAdapterStack) {
+      swipeListener.onAdapterAboutToEmpty(adapterCount);
+    }
+  }
 
-	private void layoutChildren(int startingIndex, int adapterCount) {
-		while (startingIndex < Math.min(adapterCount, mMaxVisible)) {
-			View newUnderChild = mAdapter.getView(startingIndex, null, this);
+  private void layoutChildren(int startingIndex, int adapterCount) {
+    while (startingIndex < Math.min(adapterCount, maxVisible)) {
+      final View newUnderChild = adapter.getView(startingIndex, null, this);
 
-			if (newUnderChild.getVisibility() != GONE) {
-				makeAndAddView(newUnderChild);
-				mFirstObjectInStack = startingIndex;
-			}
+      if (newUnderChild.getVisibility() != GONE) {
+        makeAndAddView(newUnderChild);
+        firstObjectInStack = startingIndex;
+      }
 
-			startingIndex++;
-		}
-	}
+      startingIndex++;
+    }
+  }
 
-	private void makeAndAddView(View child) {
-		FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) child.getLayoutParams();
-		addViewInLayout(child, 0, lp, true);
+  private void makeAndAddView(View child) {
+    final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) child.getLayoutParams();
+    addViewInLayout(child, 0, lp, true);
 
-		final boolean needToMeasure = child.isLayoutRequested();
+    final boolean needToMeasure = child.isLayoutRequested();
 
-		if (needToMeasure) {
-			int childWidthSpec = getChildMeasureSpec(mWidthMeasureSpec,
-				getPaddingLeft() + getPaddingRight() + lp.leftMargin + lp.rightMargin,
-				lp.width);
-			int childHeightSpec = getChildMeasureSpec(mHeightMeasureSpec,
-				getPaddingTop() + getPaddingBottom() + lp.topMargin + lp.bottomMargin,
-				lp.height);
-			child.measure(childWidthSpec, childHeightSpec);
-		} else {
-			cleanupLayoutState(child);
-		}
+    if (needToMeasure) {
+      final int childWidthSpec = getChildMeasureSpec(widthMeasureSpec,
+        getPaddingLeft() + getPaddingRight() + lp.leftMargin + lp.rightMargin,
+        lp.width);
+      final int childHeightSpec = getChildMeasureSpec(heightMeasureSpec,
+        getPaddingTop() + getPaddingBottom() + lp.topMargin + lp.bottomMargin,
+        lp.height);
+      child.measure(childWidthSpec, childHeightSpec);
+    } else {
+      cleanupLayoutState(child);
+    }
 
-		int w = child.getMeasuredWidth();
-		int h = child.getMeasuredHeight();
+    final int w = child.getMeasuredWidth();
+    final int h = child.getMeasuredHeight();
 
-		int gravity = lp.gravity;
+    final int gravity = lp.gravity == -1
+      ? Gravity.TOP | Gravity.START
+      : lp.gravity;
 
-		if (gravity == -1) {
-			gravity = Gravity.TOP | Gravity.START;
-		}
+    final int layoutDirection = getLayoutDirection();
+    final int absoluteGravity = Gravity.getAbsoluteGravity(gravity, layoutDirection);
+    final int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
 
-		int layoutDirection = getLayoutDirection();
-		final int absoluteGravity = Gravity.getAbsoluteGravity(gravity, layoutDirection);
-		final int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
+    int childLeft;
+    int childTop;
 
-		int childLeft;
-		int childTop;
+    switch (absoluteGravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
+      case Gravity.CENTER_HORIZONTAL:
+        childLeft = (getWidth() + getPaddingLeft() - getPaddingRight() - w) / 2 +
+          lp.leftMargin - lp.rightMargin;
+        break;
+      case Gravity.END:
+        childLeft = getWidth() + getPaddingRight() - w - lp.rightMargin;
+        break;
+      case Gravity.START:
+      default:
+        childLeft = getPaddingLeft() + lp.leftMargin;
+        break;
+    }
 
-		switch (absoluteGravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
-			case Gravity.CENTER_HORIZONTAL:
-				childLeft = (getWidth() + getPaddingLeft() - getPaddingRight() - w) / 2 +
-					lp.leftMargin - lp.rightMargin;
-				break;
-			case Gravity.END:
-				childLeft = getWidth() + getPaddingRight() - w - lp.rightMargin;
-				break;
-			case Gravity.START:
-			default:
-				childLeft = getPaddingLeft() + lp.leftMargin;
-				break;
-		}
+    switch (verticalGravity) {
+      case Gravity.CENTER_VERTICAL:
+        childTop = (getHeight() + getPaddingTop() - getPaddingBottom() - h) / 2 +
+          lp.topMargin - lp.bottomMargin;
+        break;
+      case Gravity.BOTTOM:
+        childTop = getHeight() - getPaddingBottom() - h - lp.bottomMargin;
+        break;
+      case Gravity.TOP:
+      default:
+        childTop = getPaddingTop() + lp.topMargin;
+        break;
+    }
 
-		switch (verticalGravity) {
-			case Gravity.CENTER_VERTICAL:
-				childTop = (getHeight() + getPaddingTop() - getPaddingBottom() - h) / 2 +
-					lp.topMargin - lp.bottomMargin;
-				break;
-			case Gravity.BOTTOM:
-				childTop = getHeight() - getPaddingBottom() - h - lp.bottomMargin;
-				break;
-			case Gravity.TOP:
-			default:
-				childTop = getPaddingTop() + lp.topMargin;
-				break;
-		}
+    final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG);
 
-		Paint p = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG);
+    child.setLayerType(View.LAYER_TYPE_HARDWARE, p);
+    child.layout(childLeft, childTop, childLeft + w, childTop + h);
+  }
 
-		child.setLayerType(View.LAYER_TYPE_HARDWARE, p);
-		child.layout(childLeft, childTop, childLeft + w, childTop + h);
-	}
+  private void setTopView() {
+    if (getChildCount() > 0) {
+      activeCard = getChildAt(firstObjectInStack);
 
-	private void setTopView() {
-		if (getChildCount() > 0) {
-			mActiveCard = getChildAt(mFirstObjectInStack);
+      if (activeCard != null) {
+        flingCardListener = new SwipeCardListener(activeCard, adapter.getItem(0),
+          rotationDegrees, new SwipeActionsListener() {
 
-			if (mActiveCard != null) {
-				mFlingCardListener = new SwipeCardListener(mActiveCard, mAdapter.getItem(0),
-					mRotationDegrees, new SwipeActionsListener() {
+          @Override
+          public void onTouchDown() {
+            swipeListener.onTouchDown();
+          }
 
-					@Override
-					public void onTouchDown() {
-						mOnSwipeListener.onTouchDown();
-					}
+          @Override
+          public void onTouchUp() {
+            swipeListener.onTouchUp();
+          }
 
-					@Override
-					public void onTouchUp() {
-						mOnSwipeListener.onTouchUp();
-					}
+          @Override
+          public void onCardExited() {
+            activeCard = null;
+            swipeListener.removeFirstObjectInAdapter();
+          }
 
-					@Override
-					public void onCardExited() {
-						mActiveCard = null;
-						mOnSwipeListener.removeFirstObjectInAdapter();
-					}
+          @Override
+          public void onBeforeLeftCardExit(ActionCallback done) {
+            swipeListener.onBeforeLeftCardExit(done);
+          }
 
-					@Override
-					public void onBeforeLeftCardExit(ActionCallback done) {
-						mOnSwipeListener.onBeforeLeftCardExit(done);
-					}
+          @Override
+          public void onBeforeRightCardExit(ActionCallback done) {
+            swipeListener.onBeforeRightCardExit(done);
+          }
 
-					@Override
-					public void onBeforeRightCardExit(ActionCallback done) {
-						mOnSwipeListener.onBeforeRightCardExit(done);
-					}
+          @Override
+          public void leftExit(Object dataObject) {
+            swipeListener.onLeftCardExit(dataObject);
+          }
 
-					@Override
-					public void leftExit(Object dataObject) {
-						mOnSwipeListener.onLeftCardExit(dataObject);
-					}
+          @Override
+          public void rightExit(Object dataObject) {
+            swipeListener.onRightCardExit(dataObject);
+          }
 
-					@Override
-					public void rightExit(Object dataObject) {
-						mOnSwipeListener.onRightCardExit(dataObject);
-					}
+          @Override
+          public void onClick(Object dataObject) {
+            swipeListener.onClick(dataObject);
+          }
 
-					@Override
-					public void onClick(Object dataObject) {
-						mOnSwipeListener.onClick(dataObject);
-					}
+          @Override
+          public void onScroll(float scrollProgressPercent) {
+            swipeListener.onScroll(scrollProgressPercent);
+          }
+        });
 
-					@Override
-					public void onScroll(float scrollProgressPercent) {
-						mOnSwipeListener.onScroll(scrollProgressPercent);
-					}
-				});
+        activeCard.setOnTouchListener(flingCardListener);
+      }
+    }
+  }
 
-				mActiveCard.setOnTouchListener(mFlingCardListener);
-			}
-		}
-	}
+  public SwipeCardListener getTopCardListener() {
+    if (flingCardListener == null) {
+      throw new NullPointerException();
+    }
 
-	public SwipeCardListener getTopCardListener() {
-		if (mFlingCardListener == null) {
-			throw new NullPointerException();
-		}
+    return flingCardListener;
+  }
 
-		return mFlingCardListener;
-	}
+  @Override
+  public Adapter getAdapter() {
+    return adapter;
+  }
 
-	@Override
-	public Adapter getAdapter() {
-		return mAdapter;
-	}
+  @Override
+  public void setAdapter(Adapter adapter) {
+    if (this.adapter != null && dataSetObserver != null) {
+      this.adapter.unregisterDataSetObserver(dataSetObserver);
+      dataSetObserver = null;
+    }
 
-	@Override
-	public void setAdapter(Adapter adapter) {
-		if (mAdapter != null && mDataSetObserver != null) {
-			mAdapter.unregisterDataSetObserver(mDataSetObserver);
-			mDataSetObserver = null;
-		}
+    this.adapter = adapter;
 
-		mAdapter = adapter;
+    if (this.adapter != null && dataSetObserver == null) {
+      dataSetObserver = new AdapterDataSetObserver();
+      this.adapter.registerDataSetObserver(dataSetObserver);
+    }
+  }
 
-		if (mAdapter != null && mDataSetObserver == null) {
-			mDataSetObserver = new AdapterDataSetObserver();
-			mAdapter.registerDataSetObserver(mDataSetObserver);
-		}
-	}
+  public void setSwipeListener(SwipeListener onSwipeListener) {
+    this.swipeListener = onSwipeListener;
+  }
 
-	public void setSwipeListener(SwipeListener onSwipeListener) {
-		mOnSwipeListener = onSwipeListener;
-	}
+  @Override
+  public LayoutParams generateLayoutParams(AttributeSet attrs) {
+    return new FrameLayout.LayoutParams(getContext(), attrs);
+  }
 
-	@Override
-	public LayoutParams generateLayoutParams(AttributeSet attrs) {
-		return new FrameLayout.LayoutParams(getContext(), attrs);
-	}
+  @Override
+  public void setSelection(int i) {
+    throw new UnsupportedOperationException("Not supported");
+  }
 
-	@Override
-	public void setSelection(int i) {
-		throw new UnsupportedOperationException("Not supported");
-	}
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    this.widthMeasureSpec = widthMeasureSpec;
+    this.heightMeasureSpec = heightMeasureSpec;
+  }
 
-		mWidthMeasureSpec = widthMeasureSpec;
-		mHeightMeasureSpec = heightMeasureSpec;
-	}
+  private class AdapterDataSetObserver extends DataSetObserver {
+    @Override
+    public void onChanged() {
+      requestLayout();
+    }
 
-	private class AdapterDataSetObserver extends DataSetObserver {
-		@Override
-		public void onChanged() {
-			requestLayout();
-		}
-
-		@Override
-		public void onInvalidated() {
-			requestLayout();
-		}
-	}
+    @Override
+    public void onInvalidated() {
+      requestLayout();
+    }
+  }
 }
